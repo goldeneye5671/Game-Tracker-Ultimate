@@ -94,14 +94,27 @@ def verifyCriteriaAndCreateUser(json_data):
         return '{success: "user created successfully"}'
 
 #   format of JSON String expected:
-#   {user: uname, pass: pword, email: email, randID: number}
+#   {user: uname, email: email, randID: number}
 #   the randID represents the random number given to a user when they login to a session. That must match what is stored in the
 #   usersLoggedIn dict so a user doesn't delete another user
 def verifyAndDestroyUser(json_data):
     userLoginInfoRecieved = json.loads(json_data)
     userLoginInfoFromDB = userLoginInfoCursor.execute("SELECT * FROM " + userLoginInfoTableName + " WHERE " + userLoginInfoTableHeaders[0] + " = ? OR " + userLoginInfoTableHeaders[2] + " = ?", (userLoginInfoRecieved["user"], userLoginInfoRecieved["email"])).fetchall()
-    
-    userLoginInfoFromLoginDat = usersLoggedIn["user"]
+    if 0 < len(userLoginInfoFromDB) < 2:
+        checkingUserOut = list(userLoginInfoFromDB[0])
+        if (userLoginInfoRecieved["user"] == checkingUserOut[0]) and (userLoginInfoRecieved["user"] in usersLoggedIn.keys()) and (int(userLoginInfoRecieved["randID"]) == int(usersLoggedIn["Anthony"][5])) and (checkingUserOut[2]==userLoginInfoRecieved["email"]):
+            del usersLoggedIn[userLoginInfoRecieved["user"]]
+            userLoginInfoCursor.execute('DELETE FROM ' + userLoginInfoTableName + ' WHERE uname = ? AND email = ? AND dir = ?', (userLoginInfoRecieved["user"], userLoginInfoRecieved["email"], checkingUserOut[3]))
+            userLoginInfoConnection.commit()
+            #log the user out
+            #delete the user from the database
+            #delete the database file created when the user was created
+            #delete any posts that the user may have posted on the blog
+        else:
+            print("No match, in the else")
+            # Return an error that there has been an internal error and the user must contact support to proceed
+    else:
+        return '{"errorcode":"-1", "desc":"The user does not exist"}'
 
 
 
@@ -123,3 +136,7 @@ for userToMake in userCreateReq:
     print(verifyCriteriaAndCreateUser(userToMake))
 for loginRequest in loginRequests:
     print(verifyUserInformationandLogin(loginRequest))
+#   {user: uname, email: email, randID: number}
+print('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
+verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
+verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "123456789"}')
