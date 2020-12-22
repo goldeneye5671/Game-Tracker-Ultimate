@@ -1,8 +1,10 @@
 import sqlite3
 import json
 import random
+import os
 
 userDBDir = "./Database Files/userLoginInfo/userLoginInfo.db"
+user_game_info_dir = "./Database Files/usersGameInfo/"
 userLoginInfoTableName = "loginInfo"
 userLoginInfoTableHeaders = ['uname', 'pword', 'email', 'dir', 'acc_lev']
 #expected layout of this var:
@@ -90,6 +92,7 @@ def verifyCriteriaAndCreateUser(json_data):
              return '{"errorcode":"-1", "desc":"unknown error. Please contact support"}'
     else:
         userLoginInfoCursor.execute("INSERT INTO " + userLoginInfoTableName + " VALUES (?,?,?,?,?)", (userLoginInfoRecieved["user"], userLoginInfoRecieved["pword"], userLoginInfoRecieved["email"], "./userDriveInfo/" + userLoginInfoRecieved["user"], 0))
+        sqlite3.connect(user_game_info_dir+userLoginInfoRecieved["user"])
         userLoginInfoConnection.commit()
         return '{success: "user created successfully"}'
 
@@ -98,18 +101,23 @@ def verifyCriteriaAndCreateUser(json_data):
 #   the randID represents the random number given to a user when they login to a session. That must match what is stored in the
 #   usersLoggedIn dict so a user doesn't delete another user
 def verifyAndDestroyUser(json_data):
+    print(json_data)
     userLoginInfoRecieved = json.loads(json_data)
     userLoginInfoFromDB = userLoginInfoCursor.execute("SELECT * FROM " + userLoginInfoTableName + " WHERE " + userLoginInfoTableHeaders[0] + " = ? OR " + userLoginInfoTableHeaders[2] + " = ?", (userLoginInfoRecieved["user"], userLoginInfoRecieved["email"])).fetchall()
     if 0 < len(userLoginInfoFromDB) < 2:
         checkingUserOut = list(userLoginInfoFromDB[0])
-        if (userLoginInfoRecieved["user"] == checkingUserOut[0]) and (userLoginInfoRecieved["user"] in usersLoggedIn.keys()) and (int(userLoginInfoRecieved["randID"]) == int(usersLoggedIn["Anthony"][5])) and (checkingUserOut[2]==userLoginInfoRecieved["email"]):
-            del usersLoggedIn[userLoginInfoRecieved["user"]]
-            userLoginInfoCursor.execute('DELETE FROM ' + userLoginInfoTableName + ' WHERE uname = ? AND email = ? AND dir = ?', (userLoginInfoRecieved["user"], userLoginInfoRecieved["email"], checkingUserOut[3]))
-            userLoginInfoConnection.commit()
-            #log the user out
-            #delete the user from the database
-            #delete the database file created when the user was created
-            #delete any posts that the user may have posted on the blog
+        if (userLoginInfoRecieved["user"] == checkingUserOut[0]):
+            if (userLoginInfoRecieved["user"] in list(usersLoggedIn.keys())):
+                if (int(userLoginInfoRecieved["randID"]) == int(usersLoggedIn[checkingUserOut[0]][5])):
+                    if (checkingUserOut[2]==userLoginInfoRecieved["email"]):
+                        del usersLoggedIn[userLoginInfoRecieved["user"]]
+                        userLoginInfoCursor.execute('DELETE FROM ' + userLoginInfoTableName + ' WHERE uname = ? AND email = ? AND dir = ?', (userLoginInfoRecieved["user"], userLoginInfoRecieved["email"], checkingUserOut[3]))
+                        userLoginInfoConnection.commit()
+                        os.remove(user_game_info_dir+userLoginInfoRecieved["user"])
+            #log the user out/
+            #delete the user from the database/
+            #delete the database file created when the user was created/
+            #delete any posts that the user may have posted on the blog ( cannot do yet blog not implemented yet)
         else:
             print("No match, in the else")
             # Return an error that there has been an internal error and the user must contact support to proceed
@@ -137,6 +145,9 @@ for userToMake in userCreateReq:
 for loginRequest in loginRequests:
     print(verifyUserInformationandLogin(loginRequest))
 #   {user: uname, email: email, randID: number}
-print('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
+#print('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
 verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
-verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "123456789"}')
+verifyAndDestroyUser('{"user":"Maria", "email":"test3@test.com", "randID": "'+str(usersLoggedIn['Maria'][5])+'"}')
+verifyAndDestroyUser('{"user":"Joshua", "email":"test2@test.com", "randID": "'+str(usersLoggedIn['Joshua'][5])+'"}')
+verifyAndDestroyUser('{"user":"Antonia", "email":"test4@test.com", "randID": "'+str(usersLoggedIn['Antonia'][5])+'"}')
+#verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "123456789"}')
