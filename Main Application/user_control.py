@@ -144,19 +144,20 @@ def verifyUserAccessToDB(json_data):
         else:
             return '{"errorcode":"-1", "desc":"accesslevel var out of range"}'
 
+#testing code listed below:
 
-initializeUserLoginInfoDB(userDBDir, userLoginInfoTableHeaders, userLoginInfoTableName)
-loginRequests = ['{"user": "Anthony", "pass": "1234a"}', '{"user": "Joshua", "pass": "12345a"}', '{"user": "Maria", "pass": "123456a"}', '{"user": "Antonia", "pass": "1234567a"}']
-userCreateReq = ['{"user": "Anthony", "pword":"1234a", "email":"test1@test.com"}', '{"user": "Joshua", "pword":"12345a", "email":"test2@test.com"}', '{"user": "Maria", "pword":"123456a", "email":"test3@test.com"}', '{"user": "Antonia", "pword":"1234567a", "email":"test4@test.com"}']
-
-for userToMake in userCreateReq:
-    print(verifyCriteriaAndCreateUser(userToMake))
-for loginRequest in loginRequests:
-    print(verifyUserInformationandLogin(loginRequest))
+def test():
+    initializeUserLoginInfoDB(userDBDir, userLoginInfoTableHeaders, userLoginInfoTableName)
+    loginRequests = ['{"user": "Anthony", "pass": "1234a"}', '{"user": "Joshua", "pass": "12345a"}', '{"user": "Maria", "pass": "123456a"}', '{"user": "Antonia", "pass": "1234567a"}']
+    userCreateReq = ['{"user": "Anthony", "pword":"1234a", "email":"test1@test.com"}', '{"user": "Joshua", "pword":"12345a", "email":"test2@test.com"}', '{"user": "Maria", "pword":"123456a", "email":"test3@test.com"}', '{"user": "Antonia", "pword":"1234567a", "email":"test4@test.com"}']
+    for userToMake in userCreateReq:
+        print(verifyCriteriaAndCreateUser(userToMake))
+    for loginRequest in loginRequests:
+        print(verifyUserInformationandLogin(loginRequest))
 #   {user: uname, email: email, randID: number}
-#print('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
-#verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
-#verifyAndDestroyUser('{"user":"Maria", "email":"test3@test.com", "randID": "'+str(usersLoggedIn['Maria'][5])+'"}')
-#verifyAndDestroyUser('{"user":"Joshua", "email":"test2@test.com", "randID": "'+str(usersLoggedIn['Joshua'][5])+'"}')
-#verifyAndDestroyUser('{"user":"Antonia", "email":"test4@test.com", "randID": "'+str(usersLoggedIn['Antonia'][5])+'"}')
-#verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "123456789"}')
+#   print('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
+#   verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
+#   verifyAndDestroyUser('{"user":"Maria", "email":"test3@test.com", "randID": "'+str(usersLoggedIn['Maria'][5])+'"}')
+#   verifyAndDestroyUser('{"user":"Joshua", "email":"test2@test.com", "randID": "'+str(usersLoggedIn['Joshua'][5])+'"}')
+#   verifyAndDestroyUser('{"user":"Antonia", "email":"test4@test.com", "randID": "'+str(usersLoggedIn['Antonia'][5])+'"}')
+#   verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "123456789"}')
