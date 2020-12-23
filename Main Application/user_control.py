@@ -28,7 +28,7 @@ def initializeUserLoginInfoDB(dir, listOfHeaders, userLoginInfoTblName):
 
 #JSON data expected in the following format:
 #{user: uname, pass: pword}
-#the information will be hashed. No unhashed data will be stored on the server.
+#the information sent to the server should be hashed. No unhashed data will be stored on the server.
 #the data that will be sent will already be hashed
 #if the uname/pword does not match anything in the database then an error JSON
 #string will be sent in the following format:
@@ -76,6 +76,8 @@ def verifyUserLogoutRequestandLogOut(json_data):
 #if there is a duplicate email then a similar error JSON string will
 #be sent in the following format:
 #{errorcode: -1, desc: "email already exists"}
+#otherwise the user will be created by inserting a value into a table
+#that will represent the user and store the user's hashed information.
 def verifyCriteriaAndCreateUser(json_data):
     #needs a unique username and email. Accesslv will be a number. 0 represents a normal user and 1 represents a user with privleged access. Numbers can be added as program progresses
     userLoginInfoRecieved = json.loads(json_data)
