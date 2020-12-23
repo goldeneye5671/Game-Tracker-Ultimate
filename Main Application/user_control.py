@@ -129,21 +129,22 @@ def verifyAndDestroyUser(json_data):
 #def setUserParameters(uname, dir, accsess_lev)
 
 #format of the json data:
-#{uname: uname, }
+#{uname: uname}
 def verifyUserAccessToDB(json_data):
-    userLoginInfoRecieved = json.loads(json_data)
-    userLoginInfoFromDB = userLoginInfoCursor.execute("SELECT * FROM " + userLoginInfoTableName + " WHERE " + userLoginInfoTableHeaders[0] + " = ? OR " + userLoginInfoTableHeaders[2] + " = ?", (userLoginInfoRecieved["user"], userLoginInfoRecieved["email"])).fetchall()
-    if 0 < len(userLoginInfoRecieved) < 2:
-        checkingUserOut = list(userLoginInfoFromDB)
-        if checkingUserOut[4] == 0:
-            return '{"accesslevel":"basic"}'
-        elif checkingUserOut[4] == 1:
-            return '{"accesslevel":"advanced"}'
-        elif checkingUserOut[4] == 2:
-            return '{"accesslevel":"administraitor"}'
+    userToCheck = json.loads(json_data)
+    if userToCheck["user"] in usersLoggedIn.keys():
+        userInformation = usersLoggedIn[userToCheck["user"]][4]
+        if userInformation == 0:
+            return '{"UserAccess":"Basic"}'
+        elif userInformation == 1:
+            return '{"UserAccess":"Administraitor"}'
+        elif userInformation == 2:
+            return '{"UserAccess":"ROOT"}'
         else:
-            return '{"errorcode":"-1", "desc":"accesslevel var out of range"}'
-
+            return '{"UserAccess":"No Access/User data may be corrupted. Contact support."}'
+    else:
+        return '{"errorcode":"-1", "desc":"The user is not logged in and therefore cannot make any changes"}'
+        
 #testing code listed below:
 
 def test():
@@ -154,6 +155,10 @@ def test():
         print(verifyCriteriaAndCreateUser(userToMake))
     for loginRequest in loginRequests:
         print(verifyUserInformationandLogin(loginRequest))
+    print(verifyUserAccessToDB('{"user":"Anthony"}'))
+
+
+test()
 #   {user: uname, email: email, randID: number}
 #   print('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
 #   verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
