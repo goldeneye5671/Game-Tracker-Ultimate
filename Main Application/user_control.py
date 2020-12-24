@@ -2,9 +2,10 @@ import sqlite3
 import json
 import random
 import os
+import user_database
 
 userDBDir = "./Database Files/userLoginInfo/userLoginInfo.db"
-user_game_info_dir = "./Database Files/usersGameInfo/"
+user_game_info_dir = "./Database Files/userDriveInfo/"
 userLoginInfoTableName = "loginInfo"
 userLoginInfoTableHeaders = ['uname', 'pword', 'email', 'dir', 'acc_lev']
 #expected layout of this var:
@@ -93,8 +94,10 @@ def verifyCriteriaAndCreateUser(json_data):
         else:
              return '{"errorcode":"-1", "desc":"unknown error. Please contact support"}'
     else:
-        userLoginInfoCursor.execute("INSERT INTO " + userLoginInfoTableName + " VALUES (?,?,?,?,?)", (userLoginInfoRecieved["user"], userLoginInfoRecieved["pword"], userLoginInfoRecieved["email"], "./userDriveInfo/" + userLoginInfoRecieved["user"], 0))
-        sqlite3.connect(user_game_info_dir+userLoginInfoRecieved["user"])
+        userLoginInfoCursor.execute("INSERT INTO " + userLoginInfoTableName + " VALUES (?,?,?,?,?)", (userLoginInfoRecieved["user"], userLoginInfoRecieved["pword"], userLoginInfoRecieved["email"], user_game_info_dir + userLoginInfoRecieved["user"] + ".db", 0))
+        connectionUserCreation = sqlite3.connect(user_game_info_dir+userLoginInfoRecieved["user"]+".db")
+        connectionUserCreation.commit()
+        connectionUserCreation.close()
         userLoginInfoConnection.commit()
         return '{success: "user created successfully"}'
 
@@ -126,12 +129,11 @@ def verifyAndDestroyUser(json_data):
         return '{"errorcode":"-1", "desc":"The user does not exist"}'
 
 
-
-
-#def setUserParameters(uname, dir, accsess_lev)
-
 #format of the json data:
 #{uname: uname}
+#This function will check to see if a user is logged in and if they are
+#will proceed to check what access this user has, based off of the logged in user's
+#access level.
 def verifyUserAccessToDB(json_data):
     userToCheck = json.loads(json_data)
     if userToCheck["user"] in usersLoggedIn.keys():
@@ -154,17 +156,16 @@ def test():
     loginRequests = ['{"user": "Anthony", "pass": "1234a"}', '{"user": "Joshua", "pass": "12345a"}', '{"user": "Maria", "pass": "123456a"}', '{"user": "Antonia", "pass": "1234567a"}']
     userCreateReq = ['{"user": "Anthony", "pword":"1234a", "email":"test1@test.com"}', '{"user": "Joshua", "pword":"12345a", "email":"test2@test.com"}', '{"user": "Maria", "pword":"123456a", "email":"test3@test.com"}', '{"user": "Antonia", "pword":"1234567a", "email":"test4@test.com"}']
     for userToMake in userCreateReq:
-        print(verifyCriteriaAndCreateUser(userToMake))
+        verifyCriteriaAndCreateUser(userToMake)
     for loginRequest in loginRequests:
-        print(verifyUserInformationandLogin(loginRequest))
-    print(verifyUserAccessToDB('{"user":"Anthony"}'))
+        verifyUserInformationandLogin(loginRequest)
+    verifyUserAccessToDB('{"user":"Anthony"}')
 
 
 test()
-#   {user: uname, email: email, randID: number}
-#   print('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
-#   verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "'+str(usersLoggedIn['Anthony'][5])+'"}')
-#   verifyAndDestroyUser('{"user":"Maria", "email":"test3@test.com", "randID": "'+str(usersLoggedIn['Maria'][5])+'"}')
-#   verifyAndDestroyUser('{"user":"Joshua", "email":"test2@test.com", "randID": "'+str(usersLoggedIn['Joshua'][5])+'"}')
-#   verifyAndDestroyUser('{"user":"Antonia", "email":"test4@test.com", "randID": "'+str(usersLoggedIn['Antonia'][5])+'"}')
-#   verifyAndDestroyUser('{"user":"Anthony", "email":"test1@test.com", "randID": "123456789"}')
+
+user_database.addNewDriveToDatabase(json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), usersLoggedIn["Anthony"][3], True)
+
+#TODO: Not all intended functionality has been entered into this file. Additional functionality must be added
+#       for blog posts. The functionality of this file as of December 23, 2020, is complete.
+#TODO: Develop blog functionality into the application.

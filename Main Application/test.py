@@ -1,7 +1,5 @@
-import json
+import sqlite3
 
-myJSONstring = '{"Hello":"There"}'
-print(type(myJSONstring))
-myDictionary = json.loads(myJSONstring)
-print(type(myDictionary))
-print(myDictionary.Hello)
+testconnection = sqlite3.connect("./Database Files/userDriveInfo/Anthony.db")
+curs = testconnection.cursor()
+curs.execute("CREATE TABLE IF NOT EXISTS test(test, my)")
