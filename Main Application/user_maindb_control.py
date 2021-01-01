@@ -2,7 +2,7 @@ import sqlite3
 import json
 import random
 import os
-import user_database
+import user_drive_database
 
 userDBDir = "./Database Files/userLoginInfo/userLoginInfo.db"
 user_game_info_dir = "./Database Files/userDriveInfo/"
@@ -136,20 +136,26 @@ def verifyAndDestroyUser(json_data):
 #access level.
 def verifyUserAccessToDB(json_data):
     userToCheck = json.loads(json_data)
+    retval = ''
     if userToCheck["user"] in usersLoggedIn.keys():
         userInformation = usersLoggedIn[userToCheck["user"]][4]
+        retval = '{"userLoggedIn":"true", '
         if userInformation == 0:
-            return '{"UserAccess":"Basic"}'
+            retval += '"UserAccess":"Basic"}'
         elif userInformation == 1:
-            return '{"UserAccess":"Administraitor"}'
+            retval += '"UserAccess":"Administraitor"}'
         elif userInformation == 2:
-            return '{"UserAccess":"ROOT"}'
+            retval += '"UserAccess":"ROOT"}'
         else:
-            return '{"UserAccess":"No Access/User data may be corrupted. Contact support."}'
+            retval += '"UserAccess":"No Access/User data may be corrupted. Contact support."}'
     else:
         return '{"errorcode":"-1", "desc":"The user is not logged in and therefore cannot make any changes"}'
-        
+    return retval
 #testing code listed below:
+
+def returnUserInformation(username):
+    return usersLoggedIn[username]
+
 
 def test():
     initializeUserLoginInfoDB(userDBDir, userLoginInfoTableHeaders, userLoginInfoTableName)
@@ -160,11 +166,11 @@ def test():
     for loginRequest in loginRequests:
         verifyUserInformationandLogin(loginRequest)
     verifyUserAccessToDB('{"user":"Anthony"}')
-
+    print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Anthony"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Anthony")]))
+    print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Antonia"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Antonia")]))
+    print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Maria"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Maria")]))
 
 test()
-
-user_database.addNewDriveToDatabase(json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), usersLoggedIn["Anthony"][3], True)
 
 #TODO: Not all intended functionality has been entered into this file. Additional functionality must be added
 #       for blog posts. The functionality of this file as of December 23, 2020, is complete.
