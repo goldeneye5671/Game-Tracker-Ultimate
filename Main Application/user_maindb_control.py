@@ -38,9 +38,9 @@ def verifyUserInformationandLogin(json_data):
     userLoginInfoRecieved = json.loads(json_data)
     userLoginInfoRecievedFromDB = userLoginInfoCursor.execute("SELECT * FROM " + userLoginInfoTableName + " WHERE " + userLoginInfoTableHeaders[0] + " = ?", (userLoginInfoRecieved["user"],)).fetchall()
     if -1 < len(userLoginInfoRecievedFromDB) < 1:
-        return '{"errorcode": -1, "desc": "uname does not exist or information is incorrect"}'
+        return json.dumps({"errorcode": -1, "desc": "uname does not exist or information is incorrect"})
     elif len(userLoginInfoRecievedFromDB) > 1:
-        return '{"errorcode": -1, "desc": "duplicate uname found in database. Database Check needed"}'
+        return json.dumps({"errorcode": -1, "desc": "duplicate uname found in database. Database Check needed"})
     else:
         recievedUserInfo = list(userLoginInfoRecievedFromDB[0])
         if recievedUserInfo[1] == userLoginInfoRecieved["pass"]:
@@ -48,7 +48,7 @@ def verifyUserInformationandLogin(json_data):
             usersLoggedIn[recievedUserInfo[0]] = [*recievedUserInfo, randomIdentifier]
             return json.dumps({recievedUserInfo[0]: [*recievedUserInfo, randomIdentifier]})
         else:
-            return '{"errorcode": -1, "desc": "pword does not exist or information is incorrect"}'
+            return json.dumps({"errorcode": -1, "desc": "pword does not exist or information is incorrect"})
 
 
 #JSON data expected in the following format
@@ -86,20 +86,20 @@ def verifyCriteriaAndCreateUser(json_data):
     if len(usersWithUsernameAndemail) > 0:
         checkingUserOut = list(usersWithUsernameAndemail[0])
         if checkingUserOut[0] == userLoginInfoRecieved["user"] and checkingUserOut[2] == userLoginInfoRecieved["email"]:
-            return '{"errorcode":"-1", "desc":"username and email already in use"}'
+            return json.dumps({"errorcode":-1, "desc":"username and email already in use"})
         elif checkingUserOut[0] == userLoginInfoRecieved["user"] and checkingUserOut[1] != userLoginInfoRecieved["email"]:
-            return '{"errorcode":"-1", "desc":"username already in use"}'
+            return json.dumps({"errorcode":"-1", "desc":"username already in use"})
         elif checkingUserOut[0] != userLoginInfoRecieved["user"] and checkingUserOut[2] == userLoginInfoRecieved["email"]:
-            return '{"errorcode":"-1", "desc":"email already in use"}'
+            return json.dumps({"errorcode":"-1", "desc":"email already in use"})
         else:
-             return '{"errorcode":"-1", "desc":"unknown error. Please contact support"}'
+             return json.dumps({"errorcode":"-1", "desc":"unknown error. Please contact support"})
     else:
-        userLoginInfoCursor.execute("INSERT INTO " + userLoginInfoTableName + " VALUES (?,?,?,?,?)", (userLoginInfoRecieved["user"], userLoginInfoRecieved["pword"], userLoginInfoRecieved["email"], user_game_info_dir + userLoginInfoRecieved["user"] + ".db", 0))
+        userLoginInfoCursor.execute("INSERT INTO " + userLoginInfoTableName + " VALUES (?,?,?,?,?)", (userLoginInfoRecieved["user"], userLoginInfoRecieved["pword"], userLoginInfoRecieved["email"], user_game_info_dir + userLoginInfoRecieved["user"] + ".db", 1))
         connectionUserCreation = sqlite3.connect(user_game_info_dir+userLoginInfoRecieved["user"]+".db")
         connectionUserCreation.commit()
         connectionUserCreation.close()
         userLoginInfoConnection.commit()
-        return '{success: "user created successfully"}'
+        return json.dumps({'success': "user created successfully"})
 
 #   format of JSON String expected:
 #   {user: uname, email: email, randID: number}
@@ -123,10 +123,10 @@ def verifyAndDestroyUser(json_data):
             #delete the database file created when the user was created/
             #delete any posts that the user may have posted on the blog ( cannot do yet blog not implemented yet)
         else:
-            return '{"errorcode":"-1", "desc": "Internal error. Please contact support."}'
+            return json.dumps({"errorcode":-1, "desc": "Internal error. Please contact support."})
             # Return an error that there has been an internal error and the user must contact support to proceed
     else:
-        return '{"errorcode":"-1", "desc":"The user does not exist"}'
+        return json.dumps({"errorcode":-1, "desc":"The user does not exist"})
 
 
 #format of the json data:
@@ -136,35 +136,68 @@ def verifyAndDestroyUser(json_data):
 #access level.
 def verifyUserAccessToDB(json_data):
     userToCheck = json.loads(json_data)
-    retval = ''
+    retval = {}
     if userToCheck["user"] in usersLoggedIn.keys():
         userInformation = usersLoggedIn[userToCheck["user"]][4]
-        retval = '{"userLoggedIn":"true", '
+        retval['userLoggedIn'] = True
         if userInformation == 0:
-            retval += '"UserAccess":"Basic"}'
+            retval['UserAccess'] = "Basic"
         elif userInformation == 1:
-            retval += '"UserAccess":"Administraitor"}'
+            retval['UserAccess'] = "Advanced"
         elif userInformation == 2:
-            retval += '"UserAccess":"ROOT"}'
+            retval['UserAccess'] = "ROOT"
         else:
-            retval += '"UserAccess":"No Access/User data may be corrupted. Contact support."}'
+            retval['UserAccess'] = "No Access/User data may be corrupted. Contact support."
     else:
-        return '{"errorcode":"-1", "desc":"The user is not logged in and therefore cannot make any changes"}'
-    return retval
+        return json.dumps({"userLoggedIn":False,"UserAccess":None,"errorcode":-1, "desc":"The user is not logged in and therefore cannot make any changes"})
+    return json.dumps(retval)
 #testing code listed below:
 
 def returnUserInformation(username):
-    return usersLoggedIn[username]
+    if username in usersLoggedIn.keys():
+        return usersLoggedIn[username]
+    else:
+        return False
 
 
 def test():
     initializeUserLoginInfoDB(userDBDir, userLoginInfoTableHeaders, userLoginInfoTableName)
-    loginRequests = ['{"user": "Anthony", "pass": "1234a"}', '{"user": "Joshua", "pass": "12345a"}', '{"user": "Maria", "pass": "123456a"}', '{"user": "Antonia", "pass": "1234567a"}']
-    userCreateReq = ['{"user": "Anthony", "pword":"1234a", "email":"test1@test.com"}', '{"user": "Joshua", "pword":"12345a", "email":"test2@test.com"}', '{"user": "Maria", "pword":"123456a", "email":"test3@test.com"}', '{"user": "Antonia", "pword":"1234567a", "email":"test4@test.com"}']
+    loginRequests = ['{"user": "Anthony", "pass": "1234a"}',
+                     '{"user": "Josha", "pass": "12345a"}', 
+                     '{"user": "Mara", "pass": "123456a"}',
+                     '{"user": "Antonia", "pass": "124567a"}',
+                     '{"user":"Becka","pass":"123456a"}',
+                     '{"user":"Nick","pass":"123456a"}',
+                     '{"user":"Steven","pass":"1234567a"}',
+                     '{"user":"Joseph","pass":"1234567a"}',
+                     '{"user":"Michael","pass":"1234567a"}',
+                     '{"user":"Mario","pass":"1234567a"}',
+                     '{"user":"Luigu","pass":"1234567a"}',
+                     '{"user":"Peach","pass":"1234567a"}',
+                     '{"user":"Daisy","pass":"1234567a"}',
+                     '{"user":"William","pass":"1234567a"}',
+                     '{"user":"Sean","pass":"1234567a"}',
+                     '{"user":"Rita","pass":"1234567a"}']
+    userCreateReq = ['{"user": "Anthony", "pword":"1234a","email":"test1@test.com"}',
+                     '{"user": "Joshua", "pword":"12345a", "email":"test2@test.com"}',
+                     '{"user": "Maria", "pword":"123456a", "email":"test3@test.com"}',
+                     '{"user": "Antonia", "pword":"1234567a", "email":"test4@test.com"}',
+                     '{"user": "Becka","pword":"1234567a","email":"test5@test.com"}',
+                     '{"user": "Nick","pword":"1234567a","email":"test6@test.com"}',
+                     '{"user": "Steven","pword":"1234567a","email":"test7@test.com"}',
+                     '{"user": "Joseph","pword":"1234567a","email":"test8@test.com"}',
+                     '{"user": "Michael","pword":"1234567a","email":"test9@test.com"}',
+                     '{"user": "Mario","pword":"1234567a","email":"test10@test.com"}',
+                     '{"user": "Luigu","pword":"1234567a","email":"test11@test.com"}',
+                     '{"user": "Peach","pword":"1234567a","email":"test12@test.com"}',
+                     '{"user": "Daisy","pword":"1234567a","email":"test13@test.com"}',
+                     '{"user": "William","pword":"1234567a","email":"test14@test.com"}',
+                     '{"user": "Sean","pword":"1234567a","email":"test15@test.com"}',
+                     '{"user": "Rita","pword":"1234567a","email":"test16@test.com"}']
     for userToMake in userCreateReq:
-        verifyCriteriaAndCreateUser(userToMake)
+        print(verifyCriteriaAndCreateUser(userToMake))
     for loginRequest in loginRequests:
-        verifyUserInformationandLogin(loginRequest)
+        print(verifyUserInformationandLogin(loginRequest))
     verifyUserAccessToDB('{"user":"Anthony"}')
     print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Anthony"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Anthony")]))
     print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Antonia"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Antonia")]))
@@ -172,7 +205,7 @@ def test():
     print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Anthony"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Anthony")]))
     print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Antonia"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Antonia")]))
     print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Maria"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Maria")]))
-
+    print(user_drive_database.retrieveDriveFromDB([(verifyUserAccessToDB('{"user":"Maria"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Maria")]))
 
 test()
 

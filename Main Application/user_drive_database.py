@@ -17,8 +17,9 @@ tableName = "DriveList"
 # [list that contains the user information for the database (location, accesslevel(although this is redundant), and the user's random access key (although this is also redundant))] ]
 def addNewDriveToDatabase(information):
     userInfo = json.loads(information[0])
-    if bool(userInfo["userLoggedIn"]) == True:
-        if userInfo["UserAccess"] == "Basic" or userInfo["UserAccess"] == "Advanced" or userInfo["Advanced"]:
+    if userInfo["userLoggedIn"] == True:
+        print(bool(userInfo["userLoggedIn"]))
+        if userInfo["UserAccess"] == "Basic" or userInfo["UserAccess"] == "Advanced" or userInfo["UserAccess"] == "ROOT":
             valuesOfDrive = json.loads(information[1])
             connection = sqlite3.connect(information[2][3])
             curs = connection.cursor()
@@ -30,11 +31,11 @@ def addNewDriveToDatabase(information):
                 connection.commit()
                 connection.close()
             else:  
-                return '{"errorcode":"-1","desc":"Duplicate detected. To ignore, run with flag --ignore-duplicate"}'
+                return json.dumps({"errorcode":"-1","desc":"Duplicate detected. To ignore, run with flag --ignore-duplicate"})
         else:
-            return '{"errorcode":"-1", "desc":"User does not have authority to make changes to this db"}'
+            return json.dumps({"errorcode":"-1", "desc":"User does not have authority to make changes to this db"})
     else:
-        return '{"errorcode":"-1","desc":"User does not appear to be logged in"}'
+        return json.dumps({"errorcode":"-1","desc":"User does not appear to be logged in"})
 
 
 #Expecting a list that contains 2 objects and a list:
@@ -44,7 +45,7 @@ def addNewDriveToDatabase(information):
 def removeDriveFromDB(information):
     userInfo = json.loads(information[0])
     if bool(userInfo["userLoggedIn"]) == True:
-        if userInfo["UserAccess"] == "Basic" or userInfo["UserAccess"] == "Advanced" or userInfo["Advanced"]:
+        if userInfo["UserAccess"] == "Basic" or userInfo["UserAccess"] == "Advanced" or userInfo["UserAccess"]=="ROOT":
             driveToRemove = json.loads(information[1])["name"]
             connection = sqlite3.connect(information[2][3])
             curs = connection.cursor()
@@ -58,15 +59,15 @@ def removeDriveFromDB(information):
                     connection.commit()
                     connection.close()
                 else:
-                    return '{"errorcode":"-1","desc":"No drive in database that exists with given name"}'
+                    return json.dumps({"errorcode":"-1","desc":"No drive in database that exists with given name"})
             elif len(tablesInDB) == 0:
-                return '{"errorcode":"-1","desc":"The database for the hard drives doesn\'t exist."}'
+                return json.dumps({"errorcode":"-1","desc":"The database for the hard drives doesn\'t exist."})
             elif len(tablesInDB) >= 2:
-                return '{"errorcode":"-1","desc":"The database has a duplicate tables"}'
+                return json.dumps({"errorcode":"-1","desc":"The database has a duplicate tables"})
         else:
-            '{"errorcode":"-1","desc":"The user does not have the privligaes to make changes"}'
+            return json.dumps({"errorcode":"-1","desc":"The user does not have the privligaes to make changes"})
     else:
-        '{"errorcode":"-1","desc":"The person trying to make changes is not logged in"}'
+        return json.dumps({"errorcode":"-1","desc":"The person trying to make changes is not logged in"})
 
 #Expecting a list that contains 2 objects and a list:
 #[{object contains data about user access and if the user is logged in},
@@ -75,7 +76,21 @@ def removeDriveFromDB(information):
 def retrieveDriveFromDB(information):
     userInfo = json.loads(information[0])
     if bool(userInfo["userLoggedIn"]) == True:
-        if userInfo["UserAccess"] == "Basic" or userInfo["UserAccess"] == "Advanced" or userInfo["Advanced"]:
+        if userInfo["UserAccess"] == "Advanced" or userInfo["UserAccess"]=="ROOT":
             driveToRetrieve = json.loads(information[1])["name"]
             connection = sqlite3.connect(information[2][3])
             curs = connection.cursor()
+            tablesInDB = list(curs.execute("""SELECT name FROM 'sqlite_master' WHERE type='table'""").fetchall()[0])
+            if 0<len(tablesInDB)<2:
+                allMatchingDrivesInDB = curs.execute("""SELECT * FROM """ + tableName + """ WHERE name = ?""", (driveToRetrieve,)).fetchall()
+                propsOfDrive = list(allMatchingDrivesInDB[0])
+                return json.dumps({"name":propsOfDrive[0], "numberOfGames":propsOfDrive[1], "totalDriveSizeRemaining":propsOfDrive[2], "driveSizeType":propsOfDrive[3], "combinedSpaceUsedOnDrive":propsOfDrive[4]})
+            elif len(tablesInDB) == 0:
+                 return json.dumps({"errorcode":"-1","desc":"The database for the hard drives doesn\'t exist."})
+            elif len(tablesInDB) >= 2:
+                 return json.dumps({"errorcode":"-1","desc":"The database has a duplicate tables"})
+        else:
+            return json.dumps({"errorcode":"-1","desc":"The user does not have the privligaes to make changes"})
+    else:
+        return json.dumps({"errorcode":"-1","desc":"The person trying to make changes is not logged in"})
+    

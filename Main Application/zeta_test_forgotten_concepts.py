@@ -1,5 +1,7 @@
-import sqlite3
+import json
 
-testconnection = sqlite3.connect("./Database Files/userDriveInfo/Anthony.db")
-curs = testconnection.cursor()
-curs.execute("CREATE TABLE IF NOT EXISTS test(test, my)")
+myDict = {"boolean value": True}
+myDictJsonVal = json.dumps(myDict)
+print(myDictJsonVal)
+myDictNormalVal = json.loads(myDictJsonVal)
+print(myDictNormalVal)
