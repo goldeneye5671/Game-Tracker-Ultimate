@@ -169,6 +169,10 @@ def test():
     print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Anthony"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Anthony")]))
     print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Antonia"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Antonia")]))
     print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Maria"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Maria")]))
+    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Anthony"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Anthony")]))
+    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Antonia"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Antonia")]))
+    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Maria"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Maria")]))
+
 
 test()
 
