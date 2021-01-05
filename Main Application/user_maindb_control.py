@@ -5,9 +5,10 @@ import os
 import user_drive_database
 
 userDBDir = "./Database Files/userLoginInfo/userLoginInfo.db"
-user_game_info_dir = "./Database Files/userDriveInfo/"
+user_game_info_dir = "./Database Files/userGameInfo/"
+user_drive_info_dir = "./Database Files/userDriveInfo/"
 userLoginInfoTableName = "loginInfo"
-userLoginInfoTableHeaders = ['uname', 'pword', 'email', 'dir', 'acc_lev']
+userLoginInfoTableHeaders = ['uname', 'pword', 'email', 'dirDriveLocation', 'dirGameLocation' ,'acc_lev']
 #expected layout of this var:
 #{uname: [dir, acc_lev, uniqueIdentifier(should be saved as a cookie through the browser, uniquely generated and checked to grant data access)]}
 usersLoggedIn = {}
@@ -18,13 +19,13 @@ userLoginInfoCursor = userLoginInfoConnection.cursor()
 
 #when creating table the function is only expecting a length of 4 for the list of headers
 def initializeUserLoginInfoDB(dir, listOfHeaders, userLoginInfoTblName):
-    if len(listOfHeaders) == 5:
+    if len(listOfHeaders) == 6:
         userLoginInfoConnection = sqlite3.connect(userDBDir)
         userLoginInfoCursor = userLoginInfoConnection.cursor()
-        userLoginInfoCursor.execute("""CREATE TABLE IF NOT EXISTS """ + userLoginInfoTblName + """(""" + userLoginInfoTableHeaders[0] + ", " + userLoginInfoTableHeaders[1] + ", " + userLoginInfoTableHeaders[2] + ", " + userLoginInfoTableHeaders[3] + ", " + userLoginInfoTableHeaders[4] + """)""")
+        userLoginInfoCursor.execute("""CREATE TABLE IF NOT EXISTS """ + userLoginInfoTblName + """(""" + userLoginInfoTableHeaders[0] + ", " + userLoginInfoTableHeaders[1] + ", " + userLoginInfoTableHeaders[2] + ", " + userLoginInfoTableHeaders[3] + ", " + userLoginInfoTableHeaders[4] + "," + userLoginInfoTableHeaders[5] + """)""")
         return "Table initialized successfully"
     else:
-        return "Error on table creation. The length of listOfHeaders is " + listOfHeaders.length + "and not the expected value of 4"
+        return "Error on table creation. The length of listOfHeaders is " + len(listOfHeaders) + "and not the expected value of 6"
 
 
 #JSON data expected in the following format:
@@ -94,11 +95,17 @@ def verifyCriteriaAndCreateUser(json_data):
         else:
              return json.dumps({"errorcode":"-1", "desc":"unknown error. Please contact support"})
     else:
-        userLoginInfoCursor.execute("INSERT INTO " + userLoginInfoTableName + " VALUES (?,?,?,?,?)", (userLoginInfoRecieved["user"], userLoginInfoRecieved["pword"], userLoginInfoRecieved["email"], user_game_info_dir + userLoginInfoRecieved["user"] + ".db", 1))
-        connectionUserCreation = sqlite3.connect(user_game_info_dir+userLoginInfoRecieved["user"]+".db")
-        connectionUserCreation.commit()
-        connectionUserCreation.close()
+        userLoginInfoCursor.execute("INSERT INTO " + userLoginInfoTableName + " VALUES (?,?,?,?,?,?)", (userLoginInfoRecieved["user"], userLoginInfoRecieved["pword"], userLoginInfoRecieved["email"], user_drive_info_dir + userLoginInfoRecieved["user"] + ".db", user_game_info_dir + userLoginInfoRecieved["user"]+"db",1))
         userLoginInfoConnection.commit()
+
+        connectionUserCreationDrive = sqlite3.connect(user_drive_info_dir+userLoginInfoRecieved["user"]+".db")
+        connectionUserCreationDrive.commit()
+        connectionUserCreationDrive.close()
+        
+        connectionUserCreationGame = sqlite3.connect(user_game_info_dir+userLoginInfoRecieved['user']+".db")
+        connectionUserCreationGame.commit()
+        connectionUserCreationGame.close()
+        
         return json.dumps({'success': "user created successfully"})
 
 #   format of JSON String expected:
@@ -115,9 +122,9 @@ def verifyAndDestroyUser(json_data):
                 if (int(userLoginInfoRecieved["randID"]) == int(usersLoggedIn[checkingUserOut[0]][5])):
                     if (checkingUserOut[2]==userLoginInfoRecieved["email"]):
                         del usersLoggedIn[userLoginInfoRecieved["user"]]
-                        userLoginInfoCursor.execute('DELETE FROM ' + userLoginInfoTableName + ' WHERE uname = ? AND email = ? AND dir = ?', (userLoginInfoRecieved["user"], userLoginInfoRecieved["email"], checkingUserOut[3]))
+                        userLoginInfoCursor.execute('DELETE FROM ' + userLoginInfoTableName + ' WHERE uname = ? AND email = ?', (userLoginInfoRecieved["user"], userLoginInfoRecieved["email"]))
                         userLoginInfoConnection.commit()
-                        os.remove(user_game_info_dir+userLoginInfoRecieved["user"])
+                        os.remove(user_drive_info_dir+userLoginInfoRecieved["user"])
             #log the user out/
             #delete the user from the database/
             #delete the database file created when the user was created/
@@ -138,7 +145,7 @@ def verifyUserAccessToDB(json_data):
     userToCheck = json.loads(json_data)
     retval = {}
     if userToCheck["user"] in usersLoggedIn.keys():
-        userInformation = usersLoggedIn[userToCheck["user"]][4]
+        userInformation = usersLoggedIn[userToCheck["user"]][5]
         retval['userLoggedIn'] = True
         if userInformation == 0:
             retval['UserAccess'] = "Basic"
@@ -163,48 +170,52 @@ def returnUserInformation(username):
 def test():
     initializeUserLoginInfoDB(userDBDir, userLoginInfoTableHeaders, userLoginInfoTableName)
     loginRequests = ['{"user": "Anthony", "pass": "1234a"}',
-                     '{"user": "Josha", "pass": "12345a"}', 
-                     '{"user": "Mara", "pass": "123456a"}',
-                     '{"user": "Antonia", "pass": "124567a"}',
-                     '{"user":"Becka","pass":"123456a"}',
-                     '{"user":"Nick","pass":"123456a"}',
-                     '{"user":"Steven","pass":"1234567a"}',
-                     '{"user":"Joseph","pass":"1234567a"}',
-                     '{"user":"Michael","pass":"1234567a"}',
-                     '{"user":"Mario","pass":"1234567a"}',
-                     '{"user":"Luigu","pass":"1234567a"}',
-                     '{"user":"Peach","pass":"1234567a"}',
-                     '{"user":"Daisy","pass":"1234567a"}',
-                     '{"user":"William","pass":"1234567a"}',
-                     '{"user":"Sean","pass":"1234567a"}',
-                     '{"user":"Rita","pass":"1234567a"}']
+                     '{"user": "Josuha", "pass": "1234a"}', 
+                     '{"user": "Maria", "pass": "1234a"}',
+                     '{"user": "Antonia", "pass": "1234a"}',
+                     '{"user": "Becka","pass":"1234a"}',
+                     '{"user": "Nick","pass":"1234a"}',
+                     '{"user": "Steven","pass":"1234a"}',
+                     '{"user": "Joseph","pass":"1234a"}',
+                     '{"user": "Michael","pass":"1234a"}',
+                     '{"user": "Mario","pass":"1234a"}',
+                     '{"user": "Luigu","pass":"1234a"}',
+                     '{"user": "Peach","pass":"1234a"}',
+                     '{"user": "Daisy","pass":"1234a"}',
+                     '{"user": "William","pass":"1234a"}',
+                     '{"user": "Sean","pass":"1234a"}',
+                     '{"user": "Rita","pass":"1234a"}']
     userCreateReq = ['{"user": "Anthony", "pword":"1234a","email":"test1@test.com"}',
-                     '{"user": "Joshua", "pword":"12345a", "email":"test2@test.com"}',
-                     '{"user": "Maria", "pword":"123456a", "email":"test3@test.com"}',
-                     '{"user": "Antonia", "pword":"1234567a", "email":"test4@test.com"}',
-                     '{"user": "Becka","pword":"1234567a","email":"test5@test.com"}',
-                     '{"user": "Nick","pword":"1234567a","email":"test6@test.com"}',
-                     '{"user": "Steven","pword":"1234567a","email":"test7@test.com"}',
-                     '{"user": "Joseph","pword":"1234567a","email":"test8@test.com"}',
-                     '{"user": "Michael","pword":"1234567a","email":"test9@test.com"}',
-                     '{"user": "Mario","pword":"1234567a","email":"test10@test.com"}',
-                     '{"user": "Luigu","pword":"1234567a","email":"test11@test.com"}',
-                     '{"user": "Peach","pword":"1234567a","email":"test12@test.com"}',
-                     '{"user": "Daisy","pword":"1234567a","email":"test13@test.com"}',
-                     '{"user": "William","pword":"1234567a","email":"test14@test.com"}',
-                     '{"user": "Sean","pword":"1234567a","email":"test15@test.com"}',
-                     '{"user": "Rita","pword":"1234567a","email":"test16@test.com"}']
+                     '{"user": "Joshua", "pword":"1234a", "email":"test2@test.com"}',
+                     '{"user": "Maria", "pword":"1234a", "email":"test3@test.com"}',
+                     '{"user": "Antonia", "pword":"1234a", "email":"test4@test.com"}',
+                     '{"user": "Becka","pword":"1234a","email":"test5@test.com"}',
+                     '{"user": "Nick","pword":"1234a","email":"test6@test.com"}',
+                     '{"user": "Steven","pword":"1234a","email":"test7@test.com"}',
+                     '{"user": "Joseph","pword":"1234a","email":"test8@test.com"}',
+                     '{"user": "Michael","pword":"1234a","email":"test9@test.com"}',
+                     '{"user": "Mario","pword":"1234a","email":"test10@test.com"}',
+                     '{"user": "Luigu","pword":"1234a","email":"test11@test.com"}',
+                     '{"user": "Peach","pword":"1234a","email":"test12@test.com"}',
+                     '{"user": "Daisy","pword":"1234a","email":"test13@test.com"}',
+                     '{"user": "William","pword":"1234a","email":"test14@test.com"}',
+                     '{"user": "Sean","pword":"1234a","email":"test15@test.com"}',
+                     '{"user": "Rita","pword":"1234a","email":"test16@test.com"}']
+    
     for userToMake in userCreateReq:
         print(verifyCriteriaAndCreateUser(userToMake))
+    
     for loginRequest in loginRequests:
         print(verifyUserInformationandLogin(loginRequest))
-    verifyUserAccessToDB('{"user":"Anthony"}')
+    
     print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Anthony"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Anthony")]))
     print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Antonia"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Antonia")]))
     print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Maria"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Maria")]))
+    
     print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Anthony"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Anthony")]))
     print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Antonia"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Antonia")]))
     print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Maria"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Maria")]))
+    
     print(user_drive_database.retrieveDriveFromDB([(verifyUserAccessToDB('{"user":"Maria"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Maria")]))
 
 test()

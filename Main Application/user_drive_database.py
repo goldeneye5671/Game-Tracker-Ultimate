@@ -18,7 +18,6 @@ tableName = "DriveList"
 def addNewDriveToDatabase(information):
     userInfo = json.loads(information[0])
     if userInfo["userLoggedIn"] == True:
-        print(bool(userInfo["userLoggedIn"]))
         if userInfo["UserAccess"] == "Basic" or userInfo["UserAccess"] == "Advanced" or userInfo["UserAccess"] == "ROOT":
             valuesOfDrive = json.loads(information[1])
             connection = sqlite3.connect(information[2][3])
@@ -36,6 +35,7 @@ def addNewDriveToDatabase(information):
             return json.dumps({"errorcode":"-1", "desc":"User does not have authority to make changes to this db"})
     else:
         return json.dumps({"errorcode":"-1","desc":"User does not appear to be logged in"})
+    return json.dumps({"message":"Addition of drive was successful"})
 
 
 #Expecting a list that contains 2 objects and a list:
@@ -68,6 +68,7 @@ def removeDriveFromDB(information):
             return json.dumps({"errorcode":"-1","desc":"The user does not have the privligaes to make changes"})
     else:
         return json.dumps({"errorcode":"-1","desc":"The person trying to make changes is not logged in"})
+    return json.dumps({"message":"Removal of drive was successful"})
 
 #Expecting a list that contains 2 objects and a list:
 #[{object contains data about user access and if the user is logged in},
@@ -75,16 +76,22 @@ def removeDriveFromDB(information):
 # [list that contains the user information for the database (location, accesslevel(although this is redundant), and the user's random access key (although this is also redundant))] ]
 def retrieveDriveFromDB(information):
     userInfo = json.loads(information[0])
+    
     if bool(userInfo["userLoggedIn"]) == True:
         if userInfo["UserAccess"] == "Advanced" or userInfo["UserAccess"]=="ROOT":
             driveToRetrieve = json.loads(information[1])["name"]
             connection = sqlite3.connect(information[2][3])
             curs = connection.cursor()
             tablesInDB = list(curs.execute("""SELECT name FROM 'sqlite_master' WHERE type='table'""").fetchall()[0])
-            if 0<len(tablesInDB)<2:
+            
+            if len(tablesInDB)<2 and len(tablesInDB) >0:
                 allMatchingDrivesInDB = curs.execute("""SELECT * FROM """ + tableName + """ WHERE name = ?""", (driveToRetrieve,)).fetchall()
-                propsOfDrive = list(allMatchingDrivesInDB[0])
-                return json.dumps({"name":propsOfDrive[0], "numberOfGames":propsOfDrive[1], "totalDriveSizeRemaining":propsOfDrive[2], "driveSizeType":propsOfDrive[3], "combinedSpaceUsedOnDrive":propsOfDrive[4]})
+                
+                if len(allMatchingDrivesInDB) > 0:
+                    propsOfDrive = list(allMatchingDrivesInDB[0])
+                    return json.dumps({"name":propsOfDrive[0], "numberOfGames":propsOfDrive[1], "totalDriveSizeRemaining":propsOfDrive[2], "driveSizeType":propsOfDrive[3], "combinedSpaceUsedOnDrive":propsOfDrive[4]})
+                else:
+                    return json.dumps({"errorcode":-1,"desc":"The database does not contain the drive " + driveToRetrieve})
             elif len(tablesInDB) == 0:
                  return json.dumps({"errorcode":"-1","desc":"The database for the hard drives doesn\'t exist."})
             elif len(tablesInDB) >= 2:
