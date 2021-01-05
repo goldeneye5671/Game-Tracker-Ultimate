@@ -41,10 +41,12 @@ def addNewDriveToDatabase(information):
 #Expecting a list that contains 2 objects and a list:
 #[{object contains data about user access and if the user is logged in},
 # {object contains name of the drive to be deleted from the database},
-# [list that contains the user information for the database (location, accesslevel(although this is redundant), and the user's random access key (although this is also redundant))] ]
+# [list that contains the user information for the database (location, accesslevel(although this is redundant), and the user's random access key (although this is also redundant))],
+# randomIdentifier sent by the browser
+#  ]
 def removeDriveFromDB(information):
     userInfo = json.loads(information[0])
-    if bool(userInfo["userLoggedIn"]) == True:
+    if bool(userInfo["userLoggedIn"]) == True and information[2][6] in information:
         if userInfo["UserAccess"] == "Basic" or userInfo["UserAccess"] == "Advanced" or userInfo["UserAccess"]=="ROOT":
             driveToRemove = json.loads(information[1])["name"]
             connection = sqlite3.connect(information[2][3])

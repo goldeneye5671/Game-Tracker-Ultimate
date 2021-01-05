@@ -212,11 +212,22 @@ def test():
     print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Antonia"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Antonia")]))
     print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Maria"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Maria")]))
     
+    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Anthony"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Anthony"), returnUserInformation("Anthony")[6]]))
+    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Antonia"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Antonia"), returnUserInformation("Antonia")[6]]))
+    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Maria"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Maria"), returnUserInformation("Maria")[6]]))
+    
+    for loginRequest in loginRequests:
+        newLoginRequest = json.loads(loginRequest)
+        if newLoginRequest['user'] in usersLoggedIn:
+            print(verifyUserLogoutRequestandLogOut(json.dumps({newLoginRequest["user"]:usersLoggedIn[newLoginRequest["user"]]})))
+    
+    print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Anthony"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Anthony")]))
+    print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Antonia"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Antonia")]))
+    print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Maria"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Maria")]))
+    
     print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Anthony"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Anthony")]))
     print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Antonia"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Antonia")]))
     print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Maria"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Maria")]))
-    
-    print(user_drive_database.retrieveDriveFromDB([(verifyUserAccessToDB('{"user":"Maria"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Maria")]))
 
 test()
 
