@@ -1,0 +1,8 @@
+#addGameToDB()
+#removeGameFromDB()
+#retrieveGamesFromDB()
+#addUpdateToGame()
+#removeUpdateFromGame()
+#retrieveAllInfoOnGameInDB()
+#addMath()
+#subMath()

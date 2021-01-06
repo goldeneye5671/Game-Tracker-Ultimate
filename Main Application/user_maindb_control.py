@@ -7,8 +7,11 @@ import user_drive_database
 userDBDir = "./Database Files/userLoginInfo/userLoginInfo.db"
 user_game_info_dir = "./Database Files/userGameInfo/"
 user_drive_info_dir = "./Database Files/userDriveInfo/"
+driveTableName = "DriveList"
+gameTableName = "" #keep if an init table needs to be made for an init game table
 userLoginInfoTableName = "loginInfo"
 userLoginInfoTableHeaders = ['uname', 'pword', 'email', 'dirDriveLocation', 'dirGameLocation' ,'acc_lev']
+
 #expected layout of this var:
 #{uname: [dir, acc_lev, uniqueIdentifier(should be saved as a cookie through the browser, uniquely generated and checked to grant data access)]}
 usersLoggedIn = {}
@@ -99,6 +102,7 @@ def verifyCriteriaAndCreateUser(json_data):
         userLoginInfoConnection.commit()
 
         connectionUserCreationDrive = sqlite3.connect(user_drive_info_dir+userLoginInfoRecieved["user"]+".db")
+        connectionUserCreationDrive.execute("""CREATE TABLE IF NOT EXISTS """ + driveTableName + "(name, numberOfGames, totalDriveSize, driveSizeType, totalDriveSizeRemaining, combinedSpaceUsedOnDisk)""")
         connectionUserCreationDrive.commit()
         connectionUserCreationDrive.close()
         
@@ -208,13 +212,25 @@ def test():
     for loginRequest in loginRequests:
         print(verifyUserInformationandLogin(loginRequest))
     
-    print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Anthony"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Anthony")]))
-    print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Antonia"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Antonia")]))
-    print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Maria"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Maria")]))
     
-    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Anthony"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Anthony"), returnUserInformation("Anthony")[6]]))
-    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Antonia"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Antonia"), returnUserInformation("Antonia")[6]]))
-    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Maria"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Maria"), returnUserInformation("Maria")[6]]))
+    ## IMPORTANT ##
+    ## All data returned from the user needs to be checked to make sure that it is matching for that user.
+    ## IF A USER DESIDES TO MODIFY A VARIABLE GIVEN THEY COULD GET ADMIN OR ROOT PRIVLIGAES!!!
+    ## THE USERNAMES NEED TO MATCH IN ALL THE JSON DATA SENT BACK!!
+    ## A SPECIFIC FUNCTION NEEDS TO BE CALLED IN THE JSON THAT WILL ONLY SEND A SPECIFIC TYPE OF DATABASE REQUEST!!
+    print(user_drive_database.addNewDriveToDatabase(
+        [
+            verifyUserAccessToDB('{"user":"Anthony"}'),
+            json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}),
+            returnUserInformation("Anthony"), 
+            returnUserInformation("Anthony")[6]
+        ]
+        )
+        )
+    
+    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Joshua"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Anthony"), returnUserInformation("Anthony")[6]]))
+    
+    print(user_drive_database.retrieveDriveFromDB([verifyUserAccessToDB('{"user":"Joshua"}'), json.dumps({"name":"testdrive"}), returnUserInformation("Anthony"), returnUserInformation("Anthony")[6]]))
     
     for loginRequest in loginRequests:
         newLoginRequest = json.loads(loginRequest)
@@ -222,13 +238,9 @@ def test():
             print(verifyUserLogoutRequestandLogOut(json.dumps({newLoginRequest["user"]:usersLoggedIn[newLoginRequest["user"]]})))
     
     print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Anthony"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Anthony")]))
-    print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Antonia"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Antonia")]))
-    print(user_drive_database.addNewDriveToDatabase([verifyUserAccessToDB('{"user":"Maria"}'), json.dumps({"name": "testdrive", "numberOfGames": 0, "totalDriveSize": 15, "driveSizeType": "tb", "totalDriveSizeRemaining":15}), returnUserInformation("Maria")]))
     
     print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Anthony"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Anthony")]))
-    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Antonia"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Antonia")]))
-    print(user_drive_database.removeDriveFromDB([(verifyUserAccessToDB('{"user":"Maria"}')), json.dumps({"name":"testdrive"}), returnUserInformation("Maria")]))
-
+    
 test()
 
 #TODO: Not all intended functionality has been entered into this file. Additional functionality must be added
