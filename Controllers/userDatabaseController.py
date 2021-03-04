@@ -4,14 +4,23 @@
 #Remove user profile and information
 #import Engines.JSONStringEngine
 import json
-import __init__
-from Engines import JSONStringEngine
 import os
+
+import __init__
+from Engines import JSONStringEngine, databaseCommandEngine
 #creates the database if it doesn't already exists.
 def database_initialization():
-    return JSONStringEngine.retrieve_json_property("database_info.json", "./JSON Data/", "UserLoginInfo", "Database Directory")
-    #return os.path.isfile("./Database Files/")
-
+    databaseName = "userLoginInfo.db"
+    initDatabaseDir =  JSONStringEngine.retrieve_json_property("database_info.json", "./JSON Data/", "UserLoginInfo", "Database Directory")
+    tableName = "loginInfo"
+    tableHeaders = JSONStringEngine.retrieve_json_property("database_info.json", "./JSON Data/", "UserLoginInfo", "Database Headers")
+    fileExists = os.path.isfile(initDatabaseDir+databaseName)
+    if fileExists:
+        return -1
+    else:
+        databaseCommandEngine.create_database(databaseName, initDatabaseDir)
+        databaseCommandEngine.create_table(databaseName, initDatabaseDir, tableName, tableHeaders)
+        return 0
 print(database_initialization())
 
 #opens database

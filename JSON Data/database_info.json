@@ -4,6 +4,7 @@
         "Database Headers": [
             "Username",
             "Password",
+            "Email",
             "AccessLevel"
         ]
     },

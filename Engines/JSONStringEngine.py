@@ -95,9 +95,6 @@ def databaseDictionaryFormatter(userName, databaseDir, databasePurpose, tableNam
     }
     return retDict
 
-   
-
-add_or_modify_user_entry("database_info.json", "./JSON Data/", "Joshua", databaseDictionaryFormatter("Joshua", "./Database Files/userGameInfo/", "Games", []))
 #[
 #   userName,
 #   databaseDir,
