@@ -11,6 +11,7 @@ driveTableName = "DriveList"
 gameTableName = "" #keep if an init table needs to be made for an init game table
 userLoginInfoTableName = "loginInfo"
 userLoginInfoTableHeaders = ['uname', 'pword', 'email', 'dirDriveLocation', 'dirGameLocation' ,'acc_lev']
+driveTableHeaders = [1, 2, 3, 4, 5, 6]
 
 #expected layout of this var:
 #{uname: [dir, acc_lev, uniqueIdentifier(should be saved as a cookie through the browser, uniquely generated and checked to grant data access)]}

@@ -1,0 +1,41 @@
+{
+    "UserLoginInfo": {
+        "Database Directory": "./Database Files/userLoginInfo/",
+        "Database Headers": [
+            "Username",
+            "Password",
+            "AccessLevel"
+        ]
+    },
+    "Games": {
+        "Database Directory": "./Database Files/userGameInfo/",
+        "Database Headers": [
+            "Drive Name",
+            "Breif Desc",
+            "Drive Size",
+            "Drive Size Metric",
+            "Useable Space On Drive",
+            "Remaining Space On Drive",
+            "Number Of Games On Drive"
+        ]
+    },
+    "Drives": {
+        "Database Directory": "./Database Files/userDriveInfo",
+        "Database Headers": [
+            "Drive Name",
+            "Breif Desc",
+            "Drive Size",
+            "Drive Size Metric",
+            "Useable Space On Drive",
+            "Remaining Space On Drive",
+            "Number Of Games On Drive"
+        ]
+    },
+    "Joshua": {
+        "Joshua_s_Games.db": {
+            "Database Type": "Games",
+            "Database Directory": "./Database Files/userGameInfo/",
+            "Database Tables": []
+        }
+    }
+}

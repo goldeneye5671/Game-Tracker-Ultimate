@@ -1,0 +1,2 @@
+#NOTE: Will need to pull from the JSON File and the Database file to verify user login
+#NOTE: Will need to pull from the JSON File and the Database file to verify that a username and email has been used already

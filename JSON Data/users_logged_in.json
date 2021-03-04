@@ -1,0 +1,25 @@
+[
+    {
+        "user_name":{
+            "Access Level":"Basic",
+            "id":"123456789"
+        }
+    },
+    {
+        "goldeneye5671":{
+            "Access Level":"Root",
+            "id":"132435465"
+        }
+    },
+    {   "Fantasy07":{
+            "Access Level":"Basic",
+            "id":"1140538727"
+        }
+    },
+    {
+        "peachi0007":{
+            "Access Level":"Basic",
+            "id":"130985769"
+        }
+    }
+]

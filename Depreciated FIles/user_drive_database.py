@@ -1,4 +1,5 @@
 import sqlite3
+import database_string_creater
 import json
 import os
 
@@ -32,7 +33,8 @@ import os
 #   ]
 
 tableName = "DriveList"
-
+driveTableHeaders = ['name', 'numberOfGames', 'totalDriveSize', 'driveSizeType', 'totalDriveSizeRemaining']
+gameTableHeaders = ['name', 'gameName', 'gameSize', 'sizeMetric', 'gameTags', 'dateAdded', 'playTime']
 
 #   helper function for all other functions. Expects the same argument information that is given to the function that this function helps.
 #   Will verify that the user requesting to modify the drive database is actually that user, and that
@@ -56,8 +58,8 @@ def userVerification(information):
 #   helper function for all other functions. Expects the information that is given to said function. The only purpose of
 #   this function is to return a connection and cursor to a database specified in the arguments. The only databases that
 #   should be connected to in this program are in the /Database Files/userDriveInfo/ directory.
-def createDatabaseConnections(information):
-    connection = sqlite3.connect(information[2][3])
+def createDatabaseConnections(information, locationX, locationY):
+    connection = sqlite3.connect(information[locationX][locationY]) #2, 3
     curs = connection.cursor()
     return [connection, curs]
 
@@ -68,30 +70,43 @@ def createDatabaseConnections(information):
 #       ~createDatabaseConnections(information) -   For creating a connection to the database given in the args
 def addNewDriveToDatabase(information):
     verified = json.loads(userVerification(information))
+    
     if int(verified["errorcode"]) == 0:
-        databaseInformation = createDatabaseConnections(information)
+        
+        driveDatabaseInformation = createDatabaseConnections(information, 2, 3)
+        gameDatabaseInformation = createDatabaseConnections(information, 2, 4)
+        
         valuesOfDrive = json.loads(information[1])
         valuesOfDrive = list(valuesOfDrive.values())
-        matchingDrivesAmount = len(list(databaseInformation[1].execute("""SELECT * FROM """ + tableName + " WHERE name = ? AND totalDriveSize = ? AND driveSizeType = ?", (valuesOfDrive[0], valuesOfDrive[2], valuesOfDrive[3]))))
+        
+        matchingDrivesAmount = len(list(driveDatabaseInformation[1].execute("""SELECT * FROM """ + tableName + " WHERE name = ? AND totalDriveSize = ? AND driveSizeType = ?", (valuesOfDrive[0], valuesOfDrive[2], valuesOfDrive[3]))))
+        
         if matchingDrivesAmount<1:
-            databaseInformation[1].execute("""INSERT INTO DriveList(name, numberOfGames, totalDriveSize, driveSizeType, totalDriveSizeRemaining) VALUES (?,?,?,?,?)""", (valuesOfDrive[0], int(valuesOfDrive[1]), int(valuesOfDrive[2]), valuesOfDrive[3], int(valuesOfDrive[4])))
-            databaseInformation[0].commit()
-            databaseInformation[0].close()
+            driveDatabaseInformation[1].execute(database_string_creater.insert_into_table(tableName, driveTableHeaders), (valuesOfDrive[0], int(valuesOfDrive[1]), int(valuesOfDrive[2]), valuesOfDrive[3], int(valuesOfDrive[4])))
+            gameDatabaseInformation[1].execute(database_string_creater.create_table(tableName, gameTableHeaders))
+        
+            driveDatabaseInformation[0].commit()
+        
+            driveDatabaseInformation[0].close()
         else:  
+        
             return json.dumps({"errorcode":-1,"desc":"Duplicate detected. To ignore, run with flag --ignore-duplicate"})
-        databaseInformation[0].close()
+        
+        driveDatabaseInformation[0].close()
     else:
+        
         return json.dumps(verified)
 
 
 #   function that will remove hard drive information from a user's DriveInfo database. It has the following dependancies:
 #       ~userVerification(information)  -   For verifying that a user can access the specified database
 #       ~createDatabaseConnections(information) -   For creating a connection to the database given in the args
+# TODO: NEED TO DELETE TABLE THAT CONTAINS DRIVE NAME
 def removeDriveFromDB(information):
     verified = json.loads(userVerification(information))
     if int(verified["errorcode"]) == 0:
         driveToRemove = json.loads(information[1])["name"]
-        databaseInformation = createDatabaseConnections(information)
+        databaseInformation = createDatabaseConnections(information, 2, 3)
         #note for the future:
         #This command will get the table names in a database. It's needed because a check needs to see if the table exists before any action is performed
         tablesInDB = list(databaseInformation[1].execute("""SELECT name FROM 'sqlite_master' WHERE type='table'""").fetchall()[0])
@@ -119,7 +134,7 @@ def removeDriveFromDB(information):
 def retrieveDriveFromDB(information):
     verified = json.loads(userVerification(information))
     if int(verified["errorcode"]) == 0:
-        databaseInformation = createDatabaseConnections(information)
+        databaseInformation = createDatabaseConnections(information, 2, 3)
         driveToRetrieve = json.loads(information[1])["name"]
         tablesInDB = list(databaseInformation[1].execute("""SELECT name FROM 'sqlite_master' WHERE type='table'""").fetchall()[0])         
         if len(tablesInDB)<2 and len(tablesInDB) >0:
