@@ -1,6 +1,8 @@
 {
     "UserLoginInfo": {
         "Database Directory": "./Database Files/userLoginInfo/",
+        "Database File Name": "userLoginInfo.db",
+        "Database Tables":["loginInfo"],
         "Database Headers": [
             "Username",
             "Password",
@@ -10,6 +12,8 @@
     },
     "Games": {
         "Database Directory": "./Database Files/userGameInfo/",
+        "Database File Name": "null",
+        "Database Tables":"null",
         "Database Headers": [
             "Drive Name",
             "Breif Desc",
@@ -22,6 +26,8 @@
     },
     "Drives": {
         "Database Directory": "./Database Files/userDriveInfo",
+        "Database File Name": "null",
+        "Database Tables":"null",
         "Database Headers": [
             "Drive Name",
             "Breif Desc",
@@ -31,12 +37,5 @@
             "Remaining Space On Drive",
             "Number Of Games On Drive"
         ]
-    },
-    "Joshua": {
-        "Joshua_s_Games.db": {
-            "Database Type": "Games",
-            "Database Directory": "./Database Files/userGameInfo/",
-            "Database Tables": []
-        }
     }
 }

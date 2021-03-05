@@ -43,12 +43,12 @@ def retrieve_json_property(jsonFileName=str, jsonFileDirectory=str, tableLayoutN
             return jsonData[tableLayoutName][tableLayoutPropertyName]
 
 
-def retrieve_all_user_database_entries(jsonFileName=str, jsonFileDirectory=str, user=str):
+def retrieve_all_database_entries(jsonFileName=str, jsonFileDirectory=str, table=str):
     jsonData = load_database_JSON(jsonFileName, jsonFileDirectory)
-    if jsonData.get(user, False) == False:
+    if jsonData.get(table, False) == False:
         return -1
     else:
-        return jsonData[user]
+        return jsonData[table]
 
 
 def add_or_modify_user_database_entry(jsonFileName=str, jsonFileDirectory=str, user=str, databaseName=str,newData=dict):

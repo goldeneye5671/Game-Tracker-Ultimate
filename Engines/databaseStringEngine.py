@@ -66,6 +66,9 @@ def select_table(tableName, selectType, selectCriteria):
         return check(selectCriteria)
 
 
+def select_entire_table(tableName):
+    return "SELECT * FROM " + tableName
+
 def insert_into_table(tableName, tableHeaders):
     if check(tableHeaders):
         command = 'INSERT INTO ' + tableName + '('

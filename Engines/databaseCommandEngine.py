@@ -4,44 +4,60 @@ import sqlite3
 import os
 from Engines import databaseStringEngine
 
-def createDatabaseConnections(database_name, database_directory):
+def createDatabaseConnections(database_name=str, database_directory=str):
     connection = sqlite3.connect(database_directory + database_name)
     curs = connection.cursor()
     return [connection, curs]
 
 
-def create_database(database_name, database_directory):
+def create_database(database_name=str, database_directory=str):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
     databaseConnections[0].commit()
     databaseConnections[1].close()
 
-def delete_database(database_name, database_directory):
+def delete_database(database_name=str, database_directory=str):
     os.remove(database_directory + database_name)
 
 
-def create_table(database_name, database_directory, tableName, tableHeader_list):
+def create_table(database_name=str, database_directory=str, tableName=str, tableHeader_list=list):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
     databaseConnections[1].execute(databaseStringEngine.create_table(tableName, tableHeader_list))
     databaseConnections[0].commit()
     databaseConnections[1].close()
 
 
-def delete_table(database_name, database_directory, tableName):
+def delete_table(database_name=str, database_directory=str, tableName=str):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
     databaseConnections[1].execute(databaseStringEngine.delete_table(tableName))
     databaseConnections[0].commit()
     databaseConnections[1].close()
 
 
-def insert_row(database_name, database_directory, tableName, tableHeader_list):
+
+def retrieve_table(database_name=str, database_directory=str, tableName=str):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
-    databaseConnections[1].execute(databaseStringEngine.insert_into_table(tableName, tableHeader_list))
+    selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_entire_table(tableName)).fetchall()
+    databaseConnections[1].close()
+    return selectCriteriaQuerry
+
+
+
+def insert_row(database_name=str, database_directory=str, tableName=str, tableHeader_list=list, insertionValues_list=list):
+    databaseConnections = createDatabaseConnections(database_name, database_directory)
+    databaseConnections[1].execute(databaseStringEngine.insert_into_table(tableName, tableHeader_list), tuple(insertionValues_list))
     databaseConnections[0].commit()
     databaseConnections[1].close()
 
 
-def delete_row(database_name, database_directory, tableName, selectCriteria_list):
+def delete_row(database_name=str, database_directory=str, tableName=str, selectCriteria_list=list):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
     databaseConnections[1].execute(databaseStringEngine.delete_table_row(tableName, selectCriteria_list))
     databaseConnections[0].commit()
     databaseConnections[1].close()
+
+
+def retrieve_row(database_name=str, database_directory=str, tableName=str, selectCriteria_dict=dict):
+    databaseConnections = createDatabaseConnections(database_name, database_directory)
+    selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table(tableName, "*", list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
+    databaseConnections[1].close()
+    return selectCriteriaQuerry
