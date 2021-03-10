@@ -81,4 +81,4 @@ def removeRow(tableLayout=dict, databaseName=str, rowID=str):
     return None
 
 def deleteDatabase():
-    print("Hello THere")
+    print()

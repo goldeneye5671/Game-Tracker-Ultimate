@@ -6,7 +6,15 @@
             "Username",
             "Password",
             "Email",
-            "AccessLevel"
+            "ID",
+            "Login",
+            "AccessLevel",
+            "SecurityQ1",
+            "AnswerQ1",
+            "SecurityQ2",
+            "AnswerQ2",
+            "SecurityQ3",
+            "AnswerQ3"
         ]
     },
     "Games": {
