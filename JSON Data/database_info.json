@@ -1,7 +1,6 @@
 {
     "UserLoginInfo": {
         "Database Directory": "./Database Files/userLoginInfo/",
-        "Database File Name": "userLoginInfo.db",
         "Database Tables":["loginInfo"],
         "Database Headers": [
             "Username",
@@ -12,7 +11,6 @@
     },
     "Games": {
         "Database Directory": "./Database Files/userGameInfo/",
-        "Database File Name": "null",
         "Database Tables":"null",
         "Database Headers": [
             "Drive Name",
@@ -26,8 +24,7 @@
     },
     "Drives": {
         "Database Directory": "./Database Files/userDriveInfo",
-        "Database File Name": "null",
-        "Database Tables":"null",
+        "Database Tables":["drives"],
         "Database Headers": [
             "Drive Name",
             "Breif Desc",
