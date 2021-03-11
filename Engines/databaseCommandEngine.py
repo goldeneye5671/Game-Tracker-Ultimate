@@ -61,3 +61,9 @@ def retrieve_row(database_name=str, database_directory=str, tableName=str, selec
     selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table(tableName, "*", list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
     databaseConnections[1].close()
     return selectCriteriaQuerry
+
+def retrieve_row_or(database_name=str, database_directory=str, tableName=str, selectCriteria_dict=dict):
+    databaseConnections = createDatabaseConnections(database_name, database_directory)
+    selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table_or(tableName, "*", list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
+    databaseConnections[1].close()
+    return selectCriteriaQuerry

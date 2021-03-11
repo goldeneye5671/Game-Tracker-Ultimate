@@ -47,6 +47,14 @@ def getRows(tableLayout=dict, rowData_dict=dict, databaseName=str):
         return -1
 
 
+def getRowsOr(tableLayout=dict, rowData_dict=dict, databaseName=str):
+    fileExists = os.path.isfile(tableLayout["Database Directory"]+databaseName)
+    if fileExists:
+        return databaseCommandEngine.retrieve_row_or(databaseName, tableLayout["Database Directory"], tableLayout["Database Tables"][0], rowData_dict)
+    else:
+        return -1
+
+
 #opens the database
 #gets all data in the table
 #saves the profiles to a variable

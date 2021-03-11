@@ -6,19 +6,19 @@ import __init__
 from Controllers import DatabaseController
 from Engines import JSONStringEngine
 databaseNameForUsers = "userLoginInfo.db"
+userLoginInfoTBLayout = JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "UserLoginInfo")
 sentData1 = {
     "Username":"goldeneye5671",
     "ID":"0",
     "Login":"0",
     "AccessLevel":"Root",
-    "UserLoginInfo":JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "UserLoginInfo"),
-    "function required":"DatabaseController.deleteDatabase(*sentData['args'])",
+    "function required":"DatabaseController.deleteDatabase(*jsonData['args'])",
     "for":"user",
     "args":[]
     }
 
 sentData2 = {
-    "Username":"goldeneye5671",
+    "Username":"Fantasy89",
     "Password":"Password",
     "Email":"test1@test.com",
     "ID":"0",
@@ -42,10 +42,10 @@ sentData2 = {
 #       accessing their information from one location.
 def verify_user_request(jsonData=dict):
     searchCriteria = {"Username":jsonData["Username"], "ID":jsonData["ID"], "AccessLevel":jsonData["AccessLevel"]}
-    specifiedUser = DatabaseController.getRows(jsonData["UserLoginInfo"], searchCriteria ,databaseNameForUsers)
+    specifiedUser = DatabaseController.getRows(userLoginInfoTBLayout,searchCriteria ,databaseNameForUsers)
     zippedUsers = []
     for item in specifiedUser:
-        zippedUsers.append(dict(zip(jsonData["UserLoginInfo"]["Database Headers"], list(item))))
+        zippedUsers.append(dict(zip(userLoginInfoTBLayout["Database Headers"], list(item))))
     if len(zippedUsers) == 1:
         if int(zippedUsers[0]["Login"]) == 1:
             if zippedUsers[0]["ID"] == jsonData["ID"]:
@@ -70,15 +70,15 @@ def verify_user_request(jsonData=dict):
 
 
 def verify_user_creation(jsonData):
-    searchCriteria = {"Username":jsonData["Username"], "ID":jsonData["ID"], "AccessLevel":jsonData["AccessLevel"]}
-    matchingUser = DatabaseController.getRows(jsonData["UserLoginInfo"], searchCriteria, databaseNameForUsers)
+    searchCriteria = {"Username":jsonData["Username"],"Email":jsonData["Email"]}
+    matchingUser = DatabaseController.getRowsOr(JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "UserLoginInfo"), searchCriteria, databaseNameForUsers)
     zippedUsers = []
     for item in matchingUser:
-        zippedUsers.append(dict(zip(jsonData["UserLoginInfo"]["Database Headers"], list(matchingUser[item]))))
-    if zippedUsers == 0:
-        DatabaseController.addrow(jsonData["UserLoginInfo"], list(jsonData.values()),databaseNameForUsers)
+        zippedUsers.append(dict(zip(userLoginInfoTBLayout["Database Headers"], list(item))))
+    if len(zippedUsers) == 0:
+        DatabaseController.addrow(userLoginInfoTBLayout, list(jsonData.values()),databaseNameForUsers)
     else:
-        for item in matchingUser:
+        for item in zippedUsers:
             if item["Username"] == jsonData["Username"] and item["Email"] == jsonData["Email"]:
                 return {"Errorcode":"-6ab","desc":"User already exists with that username and email. Try again"}
             elif item["Username"] == jsonData["Username"] and item["Email"] != jsonData["Email"]:
@@ -105,7 +105,7 @@ def initiate_password_reset():
 
 #DatabaseController.addrow(jsonDataRetrieved, ["goldeneye5671", "Password", "choice@choice.com", 0, 1, "Root", "", "", "", "", "", ""], databaseNameForUsers)
 print(verify_user_request(sentData1))
-
+print(verify_user_creation(sentData2))
 
 #eval(sentAct["function required"])
 

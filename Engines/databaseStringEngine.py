@@ -66,6 +66,18 @@ def select_table(tableName, selectType, selectCriteria):
         return check(selectCriteria)
 
 
+def select_table_or(tableName, selectType, selectCriteria):
+    if check(selectCriteria):
+        command = "SELECT " + str(selectType) + " FROM " + str(tableName) +" WHERE "
+        for i in range(0, len(selectCriteria)):
+            command += (str(selectCriteria[i]) + ' = ?')
+            if i != len(selectCriteria)-1:
+                command += " OR "
+        return command
+    else:
+        return check(selectCriteria)
+
+
 def select_entire_table(tableName):
     return "SELECT * FROM " + tableName
 
