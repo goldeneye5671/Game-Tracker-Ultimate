@@ -4,3 +4,6 @@ Database FIles/.DS_Store
 *.pyc
 .DS_Store
 .DS_Store
+Database FIles/userLoginInfo/userLoginInfo.db
+.gitignore
+.gitignore
