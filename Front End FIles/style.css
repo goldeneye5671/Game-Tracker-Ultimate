@@ -16,7 +16,7 @@
 }
 
 #navigation a:hover{
-    background-image: radial-gradient(grey, black);
+    background-image: radial-gradient(#242526, #000000);
 }
 
 #descPic{
