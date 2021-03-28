@@ -9,14 +9,15 @@
     padding-right: 15px;
     padding-bottom: 5px;
     padding-top: 5px;
-    border: 5px black solid;
+    border-bottom: 1px red solid;
     background-color: black;
     text-decoration: none;
     color: white;
 }
 
 #navigation a:hover{
-    background-image: radial-gradient(#242526, #000000);
+    background-image: radial-gradient(white, black);
+    border-bottom: 2px red solid;
 }
 
 #descPic{
@@ -28,7 +29,12 @@
     display: grid;
     grid-template-columns: 20% 10% 70%;
     border: 2px solid ;
+    border-radius: 5px;
     margin:5px;
+}
+
+#Steps:hover{
+    box-shadow: 5px 5px 5px red;
 }
 #stepsImg{
     width: 185px;
@@ -57,7 +63,8 @@
 }
 
 body{
-    font-family: 'Zebulon Condensed';
+    font-family: 'Truly Madly Dpad';
     background-image: radial-gradient(grey, black);
     color: white;
+    
 }
