@@ -28,13 +28,14 @@
 #Steps{
     display: grid;
     grid-template-columns: 20% 10% 70%;
-    border: 2px solid ;
+    border: 2px solid red;
     border-radius: 5px;
     margin:5px;
+    background-color: rgba(0, 0, 0, 50%);
 }
 
 #Steps:hover{
-    box-shadow: 5px 5px 5px red;
+    box-shadow: 3px 3px 3px red;
 }
 #stepsImg{
     width: 185px;
@@ -54,12 +55,20 @@
 
 #AboutUs{
     width:70%;
+    height: 302px;
     display:inline-block;
+    padding: 5px;
+    border: 2px solid red;
+    background-color: rgba(0, 0, 0, 50%);
 }
 
-#newsletter{
+#Newsletter{
     width:30%;
-    display:inline-block
+    height: 302px;
+    padding: 5px;
+    display:inline-block;
+    border: 2px solid red;
+    background-color: rgba(0, 0, 0, 50%);
 }
 
 body{
