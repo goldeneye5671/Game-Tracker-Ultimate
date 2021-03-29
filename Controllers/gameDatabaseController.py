@@ -13,7 +13,7 @@ from Engines import JSONStringEngine, databaseCommandEngine
 
 #creates a database for a user if it doesn't exist
 #NOTE: name of database is the username
-def database_initialization(tableLayout=dict, rowData_dict=dict, databaseName=str):
+def database_initialization(tableLayout=dict, databaseName=str):
     fileExists = os.path.isFile(tableLayout["Database Directory"]+databaseName)
     if fileExists:
         return -1
@@ -27,8 +27,10 @@ def database_initialization(tableLayout=dict, rowData_dict=dict, databaseName=st
 #inserts a game entry
 #saves the modification
 #closes the database
-def create_game_entry_on_drive():
-    fileExists = os.path.isfile()
+def create_game_entry_on_drive(tableLayout=dict, rowData_dict=dict, databaseName=str):
+    fileExists = os.path.isfile(tableLayout["Database Directory"]+databaseName)
+    #checks the dictionary for the "Database Tables" key
+        #
     return None
 
 
