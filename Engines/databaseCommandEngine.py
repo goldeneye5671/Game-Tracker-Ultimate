@@ -75,3 +75,6 @@ def retrieve_all_table_names(database_name=str, database_directory=str):
     for item in retrievedData:
         retVal.append(item[0])
     return retVal
+
+
+def update_table_at_spot(): return None
