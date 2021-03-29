@@ -7,6 +7,8 @@ from Controllers import DatabaseController
 from Engines import JSONStringEngine
 databaseNameForUsers = "userLoginInfo.db"
 userLoginInfoTBLayout = JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "UserLoginInfo")
+DatabaseController.database_initialization(databaseNameForUsers, userLoginInfoTBLayout)
+
 sentData1 = {
     "Username":"goldeneye5671",
     "ID":"0",
@@ -48,7 +50,7 @@ def verify_user_request(jsonData=dict):
         for item in specifiedUser:
             zippedUsers.append(dict(zip(userLoginInfoTBLayout["Database Headers"], list(item))))
     else:
-        return {"errorcode":"7", "desc":"user does not exist"}
+        return {"errorcode":"7", "desc":"userDatabase does not exist. Contact support"}
     if len(zippedUsers) == 1:
         if int(zippedUsers[0]["Login"]) == 1:
             if zippedUsers[0]["ID"] == jsonData["ID"]:
@@ -76,20 +78,23 @@ def verify_user_creation(jsonData):
     searchCriteria = {"Username":jsonData["Username"],"Email":jsonData["Email"]}
     matchingUser = DatabaseController.getRowsOr(userLoginInfoTBLayout, searchCriteria, databaseNameForUsers)
     zippedUsers = []
-    for item in matchingUser:
-        zippedUsers.append(dict(zip(userLoginInfoTBLayout["Database Headers"], list(item))))
-    if len(zippedUsers) == 0:
-        DatabaseController.addrow(userLoginInfoTBLayout, list(jsonData.values()),databaseNameForUsers)
+    if type(matchingUser) == list:
+        for item in matchingUser:
+            zippedUsers.append(dict(zip(userLoginInfoTBLayout["Database Headers"], list(item))))
+        if len(zippedUsers) == 0:
+            DatabaseController.addrow(userLoginInfoTBLayout, list(jsonData.values()),databaseNameForUsers)
+        else:
+            for item in zippedUsers:
+                if item["Username"] == jsonData["Username"] and item["Email"] == jsonData["Email"]:
+                    return {"Errorcode":"-6ab","desc":"User already exists with that username and email. Try again"}
+                elif item["Username"] == jsonData["Username"] and item["Email"] != jsonData["Email"]:
+                    return {"Errorcode":"-6a","desc":"User already exists with that username. Try again"}
+                elif item["Username"] != jsonData["Username"] and item["Email"] == jsonData["Email"]:
+                    return {"Errorcode":"-6b","desc":"User already exists with that email. Try again"}
+                else:
+                    return {"Errorcode":"-6c","desc":"unknown"}
     else:
-        for item in zippedUsers:
-            if item["Username"] == jsonData["Username"] and item["Email"] == jsonData["Email"]:
-                return {"Errorcode":"-6ab","desc":"User already exists with that username and email. Try again"}
-            elif item["Username"] == jsonData["Username"] and item["Email"] != jsonData["Email"]:
-                return {"Errorcode":"-6a","desc":"User already exists with that username. Try again"}
-            elif item["Username"] != jsonData["Username"] and item["Email"] == jsonData["Email"]:
-                return {"Errorcode":"-6b","desc":"User already exists with that email. Try again"}
-            else:
-                return {"Errorcode":"-6c","desc":"unknown"}
+        return {"errorcode":"7", "desc":"userDatabase does not exist. Contact support"}
 
 def verify_user_login(username, password):
     return None
