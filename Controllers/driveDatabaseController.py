@@ -10,9 +10,9 @@
 
 import json
 import os
+from Controllers import DatabaseController
 import __init__
 from Engines import databaseCommandEngine
-import DatabaseController
 
 
 #creates a database for the user if it doesn't exist
@@ -45,7 +45,8 @@ def retrieve_drives(name=str, tableLayout=dict, driveInfo_dict=dict):
     matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict, name)
     if len(matchingDrives) == 0:
         return {"errorcode":"9","desc":"Search querry resulted in no matches for the given drive. Drive doesn't exist."}
-
+    else:    
+        return matchingDrives
 #opens the database
 #opens the drive table
 #gets all drive entries and saves them to a variable
@@ -71,16 +72,23 @@ def retrieve_all_drives(name=str, tableLayout=dict):
 #   property:valueOfProperty
 # }
 def modify_drive(name=str, tableLayout=dict, modifications=dict, spot=dict):
-    DatabaseController.modifyRow(name, tableLayout, modifications, spot)
+    matchingDrives = retrieve_all_drives(name, tableLayout)
+    if type(matchingDrives) == list:
+        DatabaseController.modifyRow(name, tableLayout, modifications, spot)
+    else:
+        return matchingDrives
 
 #opens the database
 #opens the drive table
 #deletes the specified drive entry
 #saves the databse
 #closes the database
-def remove_drive():
-    return None
-
+def remove_drive(name=str, tableLayout=dict, deleteCriteria_dict=dict):
+    matchingDrives = retrieve_all_drives(name, tableLayout)
+    if type(matchingDrives) == list:
+        DatabaseController.removeRow(tableLayout, name, deleteCriteria_dict)
+    else:
+        return matchingDrives
 #uses the os lib to check if the database exists
 #if the database exists, uses the os lib to delete the database
 #else returns an error
