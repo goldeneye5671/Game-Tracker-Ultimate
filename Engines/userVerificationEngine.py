@@ -10,7 +10,7 @@ userLoginInfoTBLayout = JSONStringEngine.retrieve_all_database_entries("database
 DatabaseController.database_initialization(databaseNameForUsers, userLoginInfoTBLayout)
 
 sentData1 = {
-    "Username":"goldeneye5671",
+    "Username":"Fantasy89",
     "ID":"0",
     "Login":"0",
     "AccessLevel":"Root",
@@ -24,7 +24,7 @@ sentData2 = {
     "Password":"Password",
     "Email":"test1@test.com",
     "ID":"0",
-    "Login":"0",
+    "Login":"1",
     "AccessLevel":"Root",
     "SecurityQ1":"",
     "AnswerQ1":"",
