@@ -97,4 +97,14 @@ def insert_into_table(tableName, tableHeaders):
         return command
 
 
-#print (insert_into_table("testTable", ["a", 'b', 'c']))
+def update_table_at_spot(tableName, updateCriteria, spot):
+    if check(updateCriteria):
+        command="UPDATE " + tableName + " SET "
+        for i in range (0, len(updateCriteria)):
+            command += updateCriteria[i] + " = ?"
+            if i != len(updateCriteria)-1:
+                command += ", "
+        command += " WHERE " + spot["spot"] + " = ?"
+        return command
+
+#print (update_table_at_spot("loginInfo", ["ID", "Login"], {"spot":"Username"}))
