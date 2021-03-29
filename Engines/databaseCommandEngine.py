@@ -49,9 +49,9 @@ def insert_row(database_name=str, database_directory=str, tableName=str, tableHe
     databaseConnections[1].close()
 
 
-def delete_row(database_name=str, database_directory=str, tableName=str, selectCriteria_list=list):
+def delete_row(database_name=str, database_directory=str, tableName=str, selectCriteria_dict=dict):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
-    databaseConnections[1].execute(databaseStringEngine.delete_table_row(tableName, selectCriteria_list))
+    databaseConnections[1].execute(databaseStringEngine.delete_table_row(tableName, list(selectCriteria_dict.keys())), tuple(list(selectCriteria_dict.values())))
     databaseConnections[0].commit()
     databaseConnections[1].close()
 
