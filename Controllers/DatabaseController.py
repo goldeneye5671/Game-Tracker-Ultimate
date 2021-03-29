@@ -9,6 +9,9 @@ import __init__
 from Engines import databaseCommandEngine
 
 
+#NOTE: Will need to make modification so that tables in database_info.json that have a value of none
+#       Can use a parameter specified value instead of a json specified value.
+
 #creates the database if it doesn't already exists.
 def database_initialization(databaseName=str, tableLayout=dict):
     fileExists = os.path.isfile(tableLayout["Database Directory"]+databaseName)
@@ -73,8 +76,12 @@ def getTable(tableLayout=dict, databaseName=str):
 #deletes old entry
 #saves new entry
 #closes the database
-def modifyRow(tableLayout=dict, databaseName=str, rowID=str, property=str, propertyValue=str):
-    return None
+def modifyRow(name=str, tableLayout=dict, modifications=dict, spot=dict):
+    fileExists = os.path.isfile(tableLayout["Database Directory"])
+    if fileExists:
+        return databaseCommandEngine.update_table_at_spot(name, tableLayout["Database Directory"], tableLayout["Database Tables"][0], modifications, spot)
+    else:
+        return -1
 
 
 #runs the retrieve_user_profile function and saves data to variable
