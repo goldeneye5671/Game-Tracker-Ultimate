@@ -10,7 +10,7 @@ from Engines import databaseCommandEngine
 
 
 #creates the database if it doesn't already exists.
-def database_initialization(tableLayout=dict, databaseName=str):
+def database_initialization(databaseName=str, tableLayout=dict):
     fileExists = os.path.isfile(tableLayout["Database Directory"]+databaseName)
     if fileExists:
         return -1
