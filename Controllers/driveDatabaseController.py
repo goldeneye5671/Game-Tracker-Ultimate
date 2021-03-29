@@ -27,16 +27,14 @@ import DatabaseController
 #saves the database
 #closes the database
 def create_drive_entry(name=str, tableLayout=dict, driveInfo_dict=dict):
-    fileExists = os.path.isFile(tableLayout["Database Directory"]+name)
-    if fileExists:
-        matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict ,name)
-        if type(matchingDrives) == list:
-            if len(matchingDrives) == 0:
-                DatabaseController.addrow(tableLayout, list(driveInfo_dict.values()), name)
-            else:
-                return {"errorcode":"8a","desc":"Drive already exists"}
+    matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict ,name)
+    if type(matchingDrives) == list:
+        if len(matchingDrives) == 0:
+            DatabaseController.addrow(tableLayout, list(driveInfo_dict.values()), name)
         else:
-            return {"errorcode":"8b", "desc":"Drive Database doesn't exist for the user. Need to make one"}
+            return {"errorcode":"8a","desc":"Drive already exists"}
+    else:
+        return {"errorcode":"8b", "desc":"Drive Database doesn't exist for the user. Need to make one"}
         
 #opens the drive database
 #opens the drive table
@@ -44,14 +42,9 @@ def create_drive_entry(name=str, tableLayout=dict, driveInfo_dict=dict):
 #returns the drive entry
 #closes the database
 def retrieve_drives(name=str, tableLayout=dict, driveInfo_dict=dict):
-    fileExists = os.path.isfile(tableLayout["Database Directory"]+name)
-    if fileExists:
-        matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict, name)
-        if len(matchingDrives) == 0:
-            return {"errorcode":"9","desc":"Search querry resulted in no matches for the given drive. Drive doesn't exist."}
-    else:
-        return {"errorcode":"8b","desc":"Drive Database doesn't exist for the user. Need to make one"}
-
+    matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict, name)
+    if len(matchingDrives) == 0:
+        return {"errorcode":"9","desc":"Search querry resulted in no matches for the given drive. Drive doesn't exist."}
 
 #opens the database
 #opens the drive table
@@ -59,9 +52,7 @@ def retrieve_drives(name=str, tableLayout=dict, driveInfo_dict=dict):
 #closes the database
 #returns the variable
 def retrieve_all_drives(name=str, tableLayout=dict):
-    fileExists = os.path.isfile(tableLayout["Database Directory"]+name)
-    if fileExists:
-        return databaseCommandEngine.retrieve_table(name, tableLayout["Database Directory"], tableLayout["Database Tables"])
+    return DatabaseController.getTable(tableLayout, name)
 
 #opens the database
 #opens the drive table
@@ -69,8 +60,18 @@ def retrieve_all_drives(name=str, tableLayout=dict):
 #   even if the drive name is being changed
 #saves the database
 #closes the database
-def modify_drive():
-    return None
+#
+#Modifications contains all of the properties and what they will be updated to
+#modifications{
+#       property:updatedValue
+#   }
+#
+#sopt will contain the property of what needs to be updated
+#spot{
+#   property:valueOfProperty
+# }
+def modify_drive(name=str, tableLayout=dict, modifications=dict, spot=dict):
+    DatabaseController.modifyRow(name, tableLayout, modifications, spot)
 
 #opens the database
 #opens the drive table
