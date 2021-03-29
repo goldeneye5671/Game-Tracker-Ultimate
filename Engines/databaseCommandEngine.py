@@ -74,7 +74,17 @@ def retrieve_all_table_names(database_name=str, database_directory=str):
     retVal=[]
     for item in retrievedData:
         retVal.append(item[0])
+    databaseConnections[0].close()
     return retVal
 
 
-def update_table_at_spot(): return None
+def update_table_at_spot(database_name=str, database_directory=str, table_name=str, updateValues=dict, spot=dict):
+    values = list(updateValues.values())
+    values.append(spot["Username"])
+    databaseConnections = createDatabaseConnections(database_name, database_directory)
+    databaseConnections[1].execute(databaseStringEngine.update_table_at_spot(table_name, list(updateValues.keys()), spot), tuple(values))
+    databaseConnections[0].commit()
+    databaseConnections[1].close()
+
+
+#update_table_at_spot("userLoginInfo.db", "Database Files/userLoginInfo/", "loginInfo", {"ID":1, "Login":1}, {"spot":"Username", "Username":"Fantasy89"})
