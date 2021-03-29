@@ -11,21 +11,14 @@
 import json
 import os
 import __init__
-from Engines import JSONStringEngine, databaseCommandEngine
+from Engines import databaseCommandEngine
+import DatabaseController
 
 
 #creates a database for the user if it doesn't exist
 #creates a table in the database that will hold the data about each drive
 #NOTE: name of database is the username
-def database_initialization(name=str, tableLayout=dict):
-    fileExists = os.path.isFile(tableLayout["Database Directory"]+name)
-    if fileExists:
-        return -1
-    else:
-        databaseCommandEngine.create_database(tableLayout["Database Directory"]+name)
-        databaseCommandEngine.create_table(name, tableLayout["Database Directory"], tableLayout["Database Tables"][0], tableLayout["Database Headers"])
-        return 0
-
+#NOTE: USE DatabaseController's database_initialization function to make the database!!
 
 #opens the drive database
 #opens the drive table
@@ -33,15 +26,18 @@ def database_initialization(name=str, tableLayout=dict):
 #inserts a drive entry
 #saves the database
 #closes the database
-def create_drive_entry(name=str, tableLayout=dict):
+def create_drive_entry(name=str, tableLayout=dict, driveInfo_dict=dict):
     fileExists = os.path.isFile(tableLayout["Database Directory"]+name)
     if fileExists:
-        return -1
-    else:
-        databaseCommandEngine.creaate_database(name, tableLayout["Database Directory"])
-        databaseCommandEngine.create_table(name, tableLayout["Database Directory"], tableLayout["Database Tables"][0], tableLayout["Database Headers"])
-        return 0
-
+        matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict ,name)
+        if type(matchingDrives) == list:
+            if len(matchingDrives) == 0:
+                DatabaseController.addrow(tableLayout, list(driveInfo_dict.values()), name)
+            else:
+                return {"errorcode":"8a","desc":"Drive already exists"}
+        else:
+            return {"errorcode":"8b", "desc":"Drive Database doesn't exist for the user. Need to make one"}
+        
 #opens the drive database
 #opens the drive table
 #checks to see if the drive exists otherwise returns an error
@@ -50,9 +46,11 @@ def create_drive_entry(name=str, tableLayout=dict):
 def retrieve_drives(name=str, tableLayout=dict, driveInfo_dict=dict):
     fileExists = os.path.isfile(tableLayout["Database Directory"]+name)
     if fileExists:
-        return databaseCommandEngine.retrieve_row(name, tableLayout["Database Directory"], tableLayout["Database Tables"][0], driveInfo_dict)
+        matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict, name)
+        if len(matchingDrives) == 0:
+            return {"errorcode":"9","desc":"Search querry resulted in no matches for the given drive. Drive doesn't exist."}
     else:
-        return -1
+        return {"errorcode":"8b","desc":"Drive Database doesn't exist for the user. Need to make one"}
 
 
 #opens the database
@@ -60,16 +58,15 @@ def retrieve_drives(name=str, tableLayout=dict, driveInfo_dict=dict):
 #gets all drive entries and saves them to a variable
 #closes the database
 #returns the variable
-def retrieve_all_drives():
+def retrieve_all_drives(name=str, tableLayout=dict):
     fileExists = os.path.isfile(tableLayout["Database Directory"]+name)
+    if fileExists:
+        return databaseCommandEngine.retrieve_table(name, tableLayout["Database Directory"], tableLayout["Database Tables"])
 
 #opens the database
 #opens the drive table
-#gets the specified drive
-#saves that drive to a variable
-#Deletes the old drive entry
-#modifies the old drive entry
-#adds the newly modified entry
+#updates the given drive entry. Uses the name to look up the drive
+#   even if the drive name is being changed
 #saves the database
 #closes the database
 def modify_drive():
