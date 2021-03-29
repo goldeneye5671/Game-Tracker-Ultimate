@@ -44,8 +44,11 @@ def verify_user_request(jsonData=dict):
     searchCriteria = {"Username":jsonData["Username"], "ID":jsonData["ID"], "AccessLevel":jsonData["AccessLevel"]}
     specifiedUser = DatabaseController.getRows(userLoginInfoTBLayout,searchCriteria ,databaseNameForUsers)
     zippedUsers = []
-    for item in specifiedUser:
-        zippedUsers.append(dict(zip(userLoginInfoTBLayout["Database Headers"], list(item))))
+    if type(specifiedUser) == list:
+        for item in specifiedUser:
+            zippedUsers.append(dict(zip(userLoginInfoTBLayout["Database Headers"], list(item))))
+    else:
+        return {"errorcode":"7", "desc":"user does not exist"}
     if len(zippedUsers) == 1:
         if int(zippedUsers[0]["Login"]) == 1:
             if zippedUsers[0]["ID"] == jsonData["ID"]:
