@@ -21,26 +21,26 @@
         "Database Directory": "./Database Files/userGameInfo/",
         "Database Tables":"null",
         "Database Headers": [
-            "Drive Name",
-            "Breif Desc",
-            "Drive Size",
-            "Drive Size Metric",
-            "Useable Space On Drive",
-            "Remaining Space On Drive",
-            "Number Of Games On Drive"
+            "DriveName",
+            "BreifDesc",
+            "DriveSize",
+            "DriveSizeMetric",
+            "UseableSpaceOnDrive",
+            "RemainingSpaceOnDrive",
+            "NumberOfGamesOnDrive"
         ]
     },
     "Drives": {
-        "Database Directory": "./Database Files/userDriveInfo",
+        "Database Directory": "./Database Files/userDriveInfo/",
         "Database Tables":["drives"],
         "Database Headers": [
-            "Drive Name",
-            "Breif Desc",
-            "Drive Size",
-            "Drive Size Metric",
-            "Useable Space On Drive",
-            "Remaining Space On Drive",
-            "Number Of Games On Drive"
+            "DriveName",
+            "BreifDesc",
+            "DriveSize",
+            "DriveSizeMetric",
+            "UseableSpaceOnDrive",
+            "RemainingSpaceOnDrive",
+            "NumberOfGamesOnDrive"
         ]
     }
 }
