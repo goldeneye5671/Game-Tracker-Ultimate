@@ -3,10 +3,14 @@
 
 import json
 import __init__
-from Controllers import DatabaseController
+from Controllers import DatabaseController, driveDatabaseController, gameDatabaseController
 from Engines import JSONStringEngine
+
 databaseNameForUsers = "userLoginInfo.db"
 userLoginInfoTBLayout = JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "UserLoginInfo")
+driveDatabaseTBLayout = JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "Drives")
+gameDatabaseTBLayout = JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "Games")
+
 DatabaseController.database_initialization(databaseNameForUsers, userLoginInfoTBLayout)
 
 sentData1 = {
@@ -83,6 +87,8 @@ def verify_user_creation(jsonData):
             zippedUsers.append(dict(zip(userLoginInfoTBLayout["Database Headers"], list(item))))
         if len(zippedUsers) == 0:
             DatabaseController.addrow(userLoginInfoTBLayout, list(jsonData.values()),databaseNameForUsers)
+            DatabaseController.database_initialization(searchCriteria["Username"]+".db", driveDatabaseTBLayout)
+            DatabaseController.database_initialization(searchCriteria["Username"]+".db", gameDatabaseTBLayout)
         else:
             for item in zippedUsers:
                 if item["Username"] == jsonData["Username"] and item["Email"] == jsonData["Email"]:
@@ -112,7 +118,7 @@ def initiate_password_reset():
     return None
 
 #DatabaseController.addrow(jsonDataRetrieved, ["goldeneye5671", "Password", "choice@choice.com", 0, 1, "Root", "", "", "", "", "", ""], databaseNameForUsers)
-print(verify_user_request(sentData1))
+#print(verify_user_request(sentData1))
 print(verify_user_creation(sentData2))
 
 #eval(sentAct["function required"])
