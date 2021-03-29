@@ -7,3 +7,5 @@ Database FIles/.DS_Store
 Database FIles/userLoginInfo/userLoginInfo.db
 .gitignore
 .gitignore
+.DS_Store
+Database FIles/.DS_Store
