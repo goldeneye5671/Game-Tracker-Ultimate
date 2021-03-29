@@ -71,7 +71,7 @@ def verify_user_request(jsonData=dict):
 
 def verify_user_creation(jsonData):
     searchCriteria = {"Username":jsonData["Username"],"Email":jsonData["Email"]}
-    matchingUser = DatabaseController.getRowsOr(JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "UserLoginInfo"), searchCriteria, databaseNameForUsers)
+    matchingUser = DatabaseController.getRowsOr(userLoginInfoTBLayout, searchCriteria, databaseNameForUsers)
     zippedUsers = []
     for item in matchingUser:
         zippedUsers.append(dict(zip(userLoginInfoTBLayout["Database Headers"], list(item))))
