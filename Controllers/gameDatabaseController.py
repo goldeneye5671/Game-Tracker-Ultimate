@@ -27,11 +27,20 @@ def database_initialization(tableLayout=dict, databaseName=str):
 #inserts a game entry
 #saves the modification
 #closes the database
-def create_game_entry_on_drive(tableLayout=dict, rowData_dict=dict, databaseName=str):
+def create_game_entry_on_drive(tableLayout=dict, rowData_dict=dict, overwriteFlag=str,databaseName=str):
     fileExists = os.path.isfile(tableLayout["Database Directory"]+databaseName)
-    #checks the dictionary for the "Database Tables" key
-        #
-    return None
+    #gets all occurances of the given game on all drives
+    tableNames = databaseCommandEngine.retrieve_all_table_names()
+    occ = []
+    for table in tableNames:
+        list(occ.append(databaseCommandEngine.retrieve_row(databaseName, tableLayout["Database Directory"], table, rowData_dict)))
+    #checks if given game is on another drive and the overwrite flag is true
+        #make mods to the given drive (add game, subtract space, update drive table, return new data)
+    #tells user that game is installed on another drive and how to add to this drive
+    #if that is what they want to do
+    return occ
+
+
 
 
 #opens game drive database
