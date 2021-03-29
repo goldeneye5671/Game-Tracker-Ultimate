@@ -6,7 +6,7 @@
 import json
 import os
 import __init__
-from Engines import databaseCommandEngine
+from Engines import databaseCommandEngine, JSONStringEngine
 
 
 #NOTE: Will need to make modification so that tables in database_info.json that have a value of none
@@ -92,8 +92,16 @@ def modifyRow(name=str, tableLayout=dict, modifications=dict, spot=dict):
 #NOTE: This functionality will not work correctly yet. The functionality of these points need to be programmed into the other database controllers
 #deletes the drive database associated with the user
 #deletes the game database associated with the user
-def removeRow(tableLayout=dict, databaseName=str, rowID=str):
-    return None
+def removeRow(tableLayout=dict, databaseName=str, deleteCriteria_dict=dict):
+    fileExists = os.path.isfile(tableLayout["Database Directory"] + databaseName)
+    if fileExists:
+        databaseCommandEngine.delete_row(databaseName, tableLayout["Database Directory"], tableLayout["Database Tables"][0], deleteCriteria_dict)
+    else:
+        return -1
 
-def deleteDatabase():
-    print()
+
+def deleteDatabase(databaseName, database_directory):
+    fileExists = os.path.isfile(database_directory+databaseName)
+    if fileExists:
+        os.remove(database_directory+databaseName)
+    return 0
