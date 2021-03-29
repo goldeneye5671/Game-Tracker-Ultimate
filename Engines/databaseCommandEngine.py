@@ -67,3 +67,11 @@ def retrieve_row_or(database_name=str, database_directory=str, tableName=str, se
     selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table_or(tableName, "*", list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
     databaseConnections[1].close()
     return selectCriteriaQuerry
+
+def retrieve_all_table_names(database_name=str, database_directory=str):
+    databaseConnections = createDatabaseConnections(database_name, database_directory)
+    retrievedData=databaseConnections[1].execute("""SELECT name FROM sqlite_schema WHERE type='table' ORDER BY name""").fetchall()
+    retVal=[]
+    for item in retrievedData:
+        retVal.append(item[0])
+    return retVal
