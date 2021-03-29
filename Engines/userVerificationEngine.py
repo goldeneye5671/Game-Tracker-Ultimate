@@ -13,30 +13,288 @@ gameDatabaseTBLayout = JSONStringEngine.retrieve_all_database_entries("database_
 
 DatabaseController.database_initialization(databaseNameForUsers, userLoginInfoTBLayout)
 
-sentData1 = {
-    "Username":"Fantasy89",
-    "ID":"0",
-    "Login":"0",
-    "AccessLevel":"Root",
-    "function required":"DatabaseController.deleteDatabase(*jsonData['args'])",
-    "for":"user",
-    "args":[]
-    }
+driveInfo =[
+    {
+    "DriveName":"d1",
+    "BreifDesc":"xbox",
+    "DriveSize":"5",
+    "DriveSizeMetric":"tb",
+    "UseableSpaceOnDrive":"5",
+    "RemainingSpaceOnDrive":"5",
+    "NumberOfGamesOnDrive":"0"
+    },
+    {
+    "DriveName":"d2",
+    "BreifDesc":"xbox",
+    "DriveSize":"5",
+    "DriveSizeMetric":"tb",
+    "UseableSpaceOnDrive":"5",
+    "RemainingSpaceOnDrive":"5",
+    "NumberOfGamesOnDrive":"0"
+    },
+    {
+    "DriveName":"d3",
+    "BreifDesc":"xbox",
+    "DriveSize":"5",
+    "DriveSizeMetric":"tb",
+    "UseableSpaceOnDrive":"5",
+    "RemainingSpaceOnDrive":"5",
+    "NumberOfGamesOnDrive":"0"
+    },
+    {
+    "DriveName":"d4",
+    "BreifDesc":"xbox",
+    "DriveSize":"5",
+    "DriveSizeMetric":"tb",
+    "UseableSpaceOnDrive":"5",
+    "RemainingSpaceOnDrive":"5",
+    "NumberOfGamesOnDrive":"0"
+    },
+    {
+    "DriveName":"d5",
+    "BreifDesc":"xbox",
+    "DriveSize":"5",
+    "DriveSizeMetric":"tb",
+    "UseableSpaceOnDrive":"5",
+    "RemainingSpaceOnDrive":"5",
+    "NumberOfGamesOnDrive":"0"
+    },
+    {
+    "DriveName":"d6",
+    "BreifDesc":"xbox",
+    "DriveSize":"5",
+    "DriveSizeMetric":"tb",
+    "UseableSpaceOnDrive":"5",
+    "RemainingSpaceOnDrive":"5",
+    "NumberOfGamesOnDrive":"0"
+    },
+    {
+    "DriveName":"d7",
+    "BreifDesc":"xbox",
+    "DriveSize":"5",
+    "DriveSizeMetric":"tb",
+    "UseableSpaceOnDrive":"5",
+    "RemainingSpaceOnDrive":"5",
+    "NumberOfGamesOnDrive":"0"
+    },
+    {
+    "DriveName":"d8",
+    "BreifDesc":"xbox",
+    "DriveSize":"5",
+    "DriveSizeMetric":"tb",
+    "UseableSpaceOnDrive":"5",
+    "RemainingSpaceOnDrive":"5",
+    "NumberOfGamesOnDrive":"0"
+    },
+    {
+    "DriveName":"d9",
+    "BreifDesc":"xbox",
+    "DriveSize":"5",
+    "DriveSizeMetric":"tb",
+    "UseableSpaceOnDrive":"5",
+    "RemainingSpaceOnDrive":"5",
+    "NumberOfGamesOnDrive":"0"
+    },
+]
 
-sentData2 = {
+commands = [
+    {
     "Username":"Fantasy89",
-    "Password":"Password",
-    "Email":"test1@test.com",
     "ID":"0",
     "Login":"1",
     "AccessLevel":"Root",
-    "SecurityQ1":"",
-    "AnswerQ1":"",
-    "SecurityQ2":"",
-    "AnswerQ2":"",
-    "SecurityQ3":"",
-    "AnswerQ3":"",
-}
+    "function required":"driveDatabaseController.create_drive_entry(jsonData['args']**)",
+    "for":"drive",
+    "args":["game1", driveDatabaseTBLayout, driveInfo[0]]
+    },
+    {
+    "Username":"Fantasy89",
+    "ID":"0",
+    "Login":"1",
+    "AccessLevel":"Root",
+    "function required":"driveDatabaseController.create_drive_entry(jsonData['args']**)",
+    "for":"drive",
+    "args":["game2", driveDatabaseTBLayout, driveInfo[1]]
+    },
+    {
+    "Username":"Fantasy89",
+    "ID":"0",
+    "Login":"1",
+    "AccessLevel":"Root",
+    "function required":"driveDatabaseController.create_drive_entry(jsonData['args']**)",
+    "for":"drive",
+    "args":["game3", driveDatabaseTBLayout, driveInfo[2]]
+    },
+    {
+    "Username":"Fantasy89",
+    "ID":"0",
+    "Login":"1",
+    "AccessLevel":"Root",
+    "function required":"driveDatabaseController.create_drive_entry(jonData['args']**)",
+    "for":"drive",
+    "args":["game4", driveDatabaseTBLayout, driveInfo[3]]
+    },
+    {
+    "Username":"Fantasy89",
+    "ID":"0",
+    "Login":"1",
+    "AccessLevel":"Root",
+    "function required":"driveDatabaseController.create_drive_entry(jsonData['args']**)",
+    "for":"drive",
+    "args":["game5", driveDatabaseTBLayout, driveInfo[4]]
+    },
+    {
+    "Username":"Fantasy89",
+    "ID":"0",
+    "Login":"1",
+    "AccessLevel":"Root",
+    "function required":"driveDatabaseController.create_drive_entry(jsonData['args']**)",
+    "for":"drive",
+    "args":["game6", driveDatabaseTBLayout, driveInfo[5]]
+    },
+    {
+    "Username":"Fantasy89",
+    "ID":"0",
+    "Login":"1",
+    "AccessLevel":"Root",
+    "function required":"driveDatabaseController.create_drive_entry(**jsonData['args'])",
+    "for":"drive",
+    "args":["game7", driveDatabaseTBLayout, driveInfo[6]]
+    },
+    {
+    "Username":"Fantasy89",
+    "ID":"0",
+    "Login":"1",
+    "AccessLevel":"Root",
+    "function required":"driveDatabaseController.create_drive_entry(jsonData[args])",
+    "for":"drive",
+    "args":["game8", driveDatabaseTBLayout, driveInfo[7]]
+    },
+    {
+    "Username":"Fantasy89",
+    "ID":"0",
+    "Login":"1",
+    "AccessLevel":"Root",
+    "function required":"driveDatabaseController.create_drive_entry(jsonData[args])",
+    "for":"drive",
+    "args":["game9", driveDatabaseTBLayout, driveInfo[8]]
+    }
+    ]
+
+test=[
+        {
+        "Username":"Goldeneye5671",
+        "Password":"Password",
+        "Email":"test1@test.com",
+        "ID":"0",
+        "Login":"1",
+        "AccessLevel":"Root",
+        "SecurityQ1":"",
+        "AnswerQ1":"",
+        "SecurityQ2":"",
+        "AnswerQ2":"",
+        "SecurityQ3":"",
+        "AnswerQ3":"",
+    },
+    {
+        "Username":"Fantasy89",
+        "Password":"Password",
+        "Email":"test2@test.com",
+        "ID":"0",
+        "Login":"1",
+        "AccessLevel":"Root",
+        "SecurityQ1":"",
+        "AnswerQ1":"",
+        "SecurityQ2":"",
+        "AnswerQ2":"",
+        "SecurityQ3":"",
+        "AnswerQ3":"",
+    },
+    {
+        "Username":"FloppyTomato",
+        "Password":"Password",
+        "Email":"test3@test.com",
+        "ID":"0",
+        "Login":"1",
+        "AccessLevel":"Root",
+        "SecurityQ1":"",
+        "AnswerQ1":"",
+        "SecurityQ2":"",
+        "AnswerQ2":"",
+        "SecurityQ3":"",
+        "AnswerQ3":"",
+    },
+    {
+        "Username":"Bold",
+        "Password":"Password",
+        "Email":"test4@test.com",
+        "ID":"0",
+        "Login":"1",
+        "AccessLevel":"Root",
+        "SecurityQ1":"",
+        "AnswerQ1":"",
+        "SecurityQ2":"",
+        "AnswerQ2":"",
+        "SecurityQ3":"",
+        "AnswerQ3":"",
+    },
+    {
+        "Username":"tonymac",
+        "Password":"Password",
+        "Email":"test5@test.com",
+        "ID":"0",
+        "Login":"1",
+        "AccessLevel":"Root",
+        "SecurityQ1":"",
+        "AnswerQ1":"",
+        "SecurityQ2":"",
+        "AnswerQ2":"",
+        "SecurityQ3":"",
+        "AnswerQ3":"",
+    },
+    {
+        "Username":"Tdeves1",
+        "Password":"Password",
+        "Email":"test6@test.com",
+        "ID":"0",
+        "Login":"1",
+        "AccessLevel":"Root",
+        "SecurityQ1":"",
+        "AnswerQ1":"",
+        "SecurityQ2":"",
+        "AnswerQ2":"",
+        "SecurityQ3":"",
+        "AnswerQ3":"",
+    },
+    {
+        "Username":"Frozen07",
+        "Password":"Password",
+        "Email":"test7@test.com",
+        "ID":"0",
+        "Login":"1",
+        "AccessLevel":"Root",
+        "SecurityQ1":"",
+        "AnswerQ1":"",
+        "SecurityQ2":"",
+        "AnswerQ2":"",
+        "SecurityQ3":"",
+        "AnswerQ3":"",
+    },
+    {
+        "Username":"geye5617",
+        "Password":"Password",
+        "Email":"test8@test.com",
+        "ID":"0",
+        "Login":"1",
+        "AccessLevel":"Root",
+        "SecurityQ1":"",
+        "AnswerQ1":"",
+        "SecurityQ2":"",
+        "AnswerQ2":"",
+        "SecurityQ3":"",
+        "AnswerQ3":"",
+    }
+]
 
 #DatabaseController.database_initialization(jsonDataRetrieved, databaseNameForUsers)
 
@@ -119,7 +377,11 @@ def initiate_password_reset():
 
 #DatabaseController.addrow(jsonDataRetrieved, ["goldeneye5671", "Password", "choice@choice.com", 0, 1, "Root", "", "", "", "", "", ""], databaseNameForUsers)
 #print(verify_user_request(sentData1))
-print(verify_user_creation(sentData2))
+for item in test:
+    print(verify_user_creation(item))
+
+for item in commands:
+    print (verify_user_request(item))
 
 #eval(sentAct["function required"])
 
