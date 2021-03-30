@@ -2,6 +2,7 @@
 #NOTE: Will need to pull from the JSON File and the Database file to verify that a username and email has been used already
 
 import json
+from random import randint
 import __init__
 from Controllers import DatabaseController, driveDatabaseController, gameDatabaseController
 from Engines import JSONStringEngine
@@ -97,87 +98,97 @@ driveInfo =[
     },
 ]
 
+#NOTE: Bug exists where is a username and user's database name may not match
+#       This causes the user to access the wrong drive. Assumed here that the
+#       browser will make sure that the username and the database name match.
+
+#NOTE No encryption will be implemented on the server end. The browser will do
+#       the encryption and send it. The reason being that the bottle framework
+#       doesn't support HTTPS. Because of this, to make sure that the user's data
+#       is as secure as I can make it, the data that the server will recieve will
+#       already be sent, preventing a man in the middle attack. I will hopefully
+#       be transitioning to a flask based server framework for increased security.
 commands = [
     {
-    "Username":"Fantasy89",
+    "Username":"Tdeves1",
     "ID":"0",
     "Login":"1",
     "AccessLevel":"Root",
-    "function required":"driveDatabaseController.create_drive_entry(jsonData['args']**)",
+    "function required":"driveDatabaseController.create_drive_entry(*jsonData['args'])",
     "for":"drive",
-    "args":["game1", driveDatabaseTBLayout, driveInfo[0]]
+    "args":["Tdeves1.db", driveDatabaseTBLayout, driveInfo[0]]
+    },
+    {
+    "Username":"Bold",
+    "ID":"0",
+    "Login":"1",
+    "AccessLevel":"Root",
+    "function required":"driveDatabaseController.create_drive_entry(*jsonData['args'])",
+    "for":"drive",
+    "args":["Bold.db", driveDatabaseTBLayout, driveInfo[1]]
+    },
+    {
+    "Username":"Frozen07",
+    "ID":"0",
+    "Login":"1",
+    "AccessLevel":"Root",
+    "function required":"driveDatabaseController.create_drive_entry(*jsonData['args'])",
+    "for":"drive",
+    "args":["Frozen07.db", driveDatabaseTBLayout, driveInfo[2]]
     },
     {
     "Username":"Fantasy89",
     "ID":"0",
     "Login":"1",
     "AccessLevel":"Root",
-    "function required":"driveDatabaseController.create_drive_entry(jsonData['args']**)",
+    "function required":"driveDatabaseController.create_drive_entry(*jsonData['args'])",
     "for":"drive",
-    "args":["game2", driveDatabaseTBLayout, driveInfo[1]]
+    "args":["Fantasy89.db", driveDatabaseTBLayout, driveInfo[3]]
     },
     {
     "Username":"Fantasy89",
     "ID":"0",
     "Login":"1",
     "AccessLevel":"Root",
-    "function required":"driveDatabaseController.create_drive_entry(jsonData['args']**)",
+    "function required":"driveDatabaseController.create_drive_entry(*jsonData['args'])",
     "for":"drive",
-    "args":["game3", driveDatabaseTBLayout, driveInfo[2]]
+    "args":["Fantasy89.db", driveDatabaseTBLayout, driveInfo[4]]
     },
     {
     "Username":"Fantasy89",
     "ID":"0",
     "Login":"1",
     "AccessLevel":"Root",
-    "function required":"driveDatabaseController.create_drive_entry(jonData['args']**)",
+    "function required":"driveDatabaseController.create_drive_entry(*jsonData['args'])",
     "for":"drive",
-    "args":["game4", driveDatabaseTBLayout, driveInfo[3]]
+    "args":["Fantasy89.db", driveDatabaseTBLayout, driveInfo[5]]
     },
     {
     "Username":"Fantasy89",
     "ID":"0",
     "Login":"1",
     "AccessLevel":"Root",
-    "function required":"driveDatabaseController.create_drive_entry(jsonData['args']**)",
+    "function required":"driveDatabaseController.create_drive_entry(*jsonData['args'])",
     "for":"drive",
-    "args":["game5", driveDatabaseTBLayout, driveInfo[4]]
+    "args":["Fantasy89.db", driveDatabaseTBLayout, driveInfo[6]]
     },
     {
     "Username":"Fantasy89",
     "ID":"0",
     "Login":"1",
     "AccessLevel":"Root",
-    "function required":"driveDatabaseController.create_drive_entry(jsonData['args']**)",
+    "function required":"driveDatabaseController.create_drive_entry(*jsonData['args'])",
     "for":"drive",
-    "args":["game6", driveDatabaseTBLayout, driveInfo[5]]
+    "args":["Fantasy89.db", driveDatabaseTBLayout, driveInfo[7]]
     },
     {
     "Username":"Fantasy89",
     "ID":"0",
     "Login":"1",
     "AccessLevel":"Root",
-    "function required":"driveDatabaseController.create_drive_entry(**jsonData['args'])",
+    "function required":"driveDatabaseController.create_drive_entry(*jsonData['args'])",
     "for":"drive",
-    "args":["game7", driveDatabaseTBLayout, driveInfo[6]]
-    },
-    {
-    "Username":"Fantasy89",
-    "ID":"0",
-    "Login":"1",
-    "AccessLevel":"Root",
-    "function required":"driveDatabaseController.create_drive_entry(jsonData[args])",
-    "for":"drive",
-    "args":["game8", driveDatabaseTBLayout, driveInfo[7]]
-    },
-    {
-    "Username":"Fantasy89",
-    "ID":"0",
-    "Login":"1",
-    "AccessLevel":"Root",
-    "function required":"driveDatabaseController.create_drive_entry(jsonData[args])",
-    "for":"drive",
-    "args":["game9", driveDatabaseTBLayout, driveInfo[8]]
+    "args":["Fantasy89.db", driveDatabaseTBLayout, driveInfo[8]]
     }
     ]
 
@@ -296,9 +307,6 @@ test=[
     }
 ]
 
-#DatabaseController.database_initialization(jsonDataRetrieved, databaseNameForUsers)
-
-
 #NOTE: Before the action can be run, the data required for verification must be checked
 #      The unique identifier must match what is stored in the users_logged_in.json file
 #      and the user must also be logged in as well.
@@ -323,7 +331,7 @@ def verify_user_request(jsonData=dict):
                     else:
                         return {"Errorcode":"1", "desc":"User submitted an access level that does not match assigned access level"}
                 elif jsonData["for"]=="game" or jsonData["for"]=="drive":
-                    exec(jsonData["function required"])
+                    return exec(jsonData["function required"])
                 else:
                     return {"Errorcode":"-2", "desc":"User submitted unknown action"}
             else:
@@ -336,10 +344,25 @@ def verify_user_request(jsonData=dict):
         return {"Errorcode":"-5b","desc":"user not detected. please make a user"}
 
 
+#{
+#       "Username":    "username",
+#       "Password":    "password",
+#       "Email":       "email@domain.com",
+#       "ID":          0,
+#       "Login":       0,
+#       "AccessLevel": "basic",
+#       "SecurityQ1":  "???",
+#       "AnswerQ1":    "ANS",
+#       "SecurityQ2":  "???",
+#       "AnswerQ2":    "ANS",
+#       "SecurityQ3":  "???",
+#       "AnswerQ3":    "ANS",
+#   }
 def verify_user_creation(jsonData):
     searchCriteria = {"Username":jsonData["Username"],"Email":jsonData["Email"]}
     matchingUser = DatabaseController.getRowsOr(userLoginInfoTBLayout, searchCriteria, databaseNameForUsers)
     zippedUsers = []
+    retVal = []
     if type(matchingUser) == list:
         for item in matchingUser:
             zippedUsers.append(dict(zip(userLoginInfoTBLayout["Database Headers"], list(item))))
@@ -350,21 +373,57 @@ def verify_user_creation(jsonData):
         else:
             for item in zippedUsers:
                 if item["Username"] == jsonData["Username"] and item["Email"] == jsonData["Email"]:
-                    return {"Errorcode":"-6ab","desc":"User already exists with that username and email. Try again"}
+                    retVal.append({"Errorcode":"-6ab","desc":"User already exists with that username and email. Try again"})
                 elif item["Username"] == jsonData["Username"] and item["Email"] != jsonData["Email"]:
-                    return {"Errorcode":"-6a","desc":"User already exists with that username. Try again"}
+                    retVal.append({"Errorcode":"-6a","desc":"User already exists with that username. Try again"})
                 elif item["Username"] != jsonData["Username"] and item["Email"] == jsonData["Email"]:
-                    return {"Errorcode":"-6b","desc":"User already exists with that email. Try again"}
+                    retVal.append({"Errorcode":"-6b","desc":"User already exists with that email. Try again"})
                 else:
-                    return {"Errorcode":"-6c","desc":"unknown"}
+                    retVal.append({"Errorcode":"-6c","desc":"unknown"})
+            return retVal
     else:
         return {"errorcode":"7", "desc":"userDatabase does not exist. Contact support"}
 
-def verify_user_login(username, password):
-    return None
 
+#This function is much shorter than the other verify functions because I realized something.
+#   I am searching the database for a record that contains both the given username and password
+#   Since I am looking for the username AND looking for the password, I am only going to get
+#   records that have the same username AND password that I give it. So, I don't really need
+#   to look at the username or password directly, but I do need to look at the length of the
+#   list. If the list is 0, well then nothing was found. If it's 1, then one match was found,
+#   if the list is greater than 1 or I don't get a type of list back, then there is a DB issue.
+#
+#{
+#   Username:username,
+#   Password:password
+# }
+def verify_user_login(jsonData):
+    searchCriteria = {"Username": jsonData["Username"], "Password": jsonData["Password"]}
+    matchingUser = DatabaseController.getRows(userLoginInfoTBLayout, searchCriteria, databaseNameForUsers)
+    if type(matchingUser) ==list:
+        if len(matchingUser)==1:
+            #The way that this is set up allows you to log in from another browser. In theory,
+            #you could log in through anouther browser and reset the ID this way. I am not sure
+            #if I want to keep it this way though. I only want one browser at a time to access
+            #this data
+            DatabaseController.modifyRow(databaseNameForUsers, userLoginInfoTBLayout, {"ID":randint(0, 999999999), "Login":0}, {"spot":"Username", "Username":jsonData["Username"]})
+        elif len(matchingUser) < 1: 
+            return {"errorcode":"7a", "desc":"No user found with the given information. Try again"}
+        else:
+            return {"errorcode":"7b", "desc":"Database error. Contact customer support"}
+    else:
+        return {"errorcode":"7c", "desc":"Database does not exist. Contact customer support"}
 
-def verify_user_logout():
+#{
+#   Username:user_name,
+#   ID:randint(0, 9999999999)
+# }
+def verify_user_logout(jsonData):
+    searchCriteria = {"Username":jsonData["Username"], "ID":jsonData["ID"]}
+    matchingUser = DatabaseController.getRows(userLoginInfoTBLayout, searchCriteria, databaseNameForUsers)
+    if type(matchingUser) == list:
+        if len(matchingUser)==1:
+            DatabaseController.modifyRow(databaseNameForUsers, userLoginInfoTBLayout, {"ID":0, "Login":0}, {"spot":"Username", "Username":jsonData["Username"]})
     return None
 
 
