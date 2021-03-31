@@ -114,8 +114,8 @@ commands = [
     "ID":"0",
     "Login":"1",
     "AccessLevel":"Root",
-    "function required":"driveDatabaseController.create_drive_entry(*jsonData['args'])",
-    "for":"drive",
+    "function required":"userVerificationEngine.create_drive_entry(*jsonData['args'])",
+    "for":"User",
     "args":["Tdeves1.db", driveDatabaseTBLayout, driveInfo[0]]
     },
     {
@@ -315,7 +315,6 @@ test=[
 def verify_user_request(jsonData=dict):
     selectors = ["Username", "ID", "Login", "AccessLevel"]
     specifiedUser = DatabaseController.getRows(userLoginInfoTBLayout,{"Username":jsonData["Username"]},databaseNameForUsers, selectors)
-    root = False
     errorOnValue = []
     retVal = []
     if type(specifiedUser)==list and len(specifiedUser) == 1:
@@ -325,32 +324,21 @@ def verify_user_request(jsonData=dict):
             if specifiedUser[i] != recievedUser[i]:
                 errorOnValue.append(i)
     if len(errorOnValue) == 0:
-        root = specifiedUser[3]
-        
-
-        print(specifiedUser)
-    #         if int(specifiedUser[1]) == 1:
-    #             if specifiedUser[2] == jsonData["ID"]:
-    #                 if specifiedUser[1] == "Root" and jsonData["for"] == "user":
-    #                     if zippedUsers[0]["AccessLevel"] == jsonData["AccessLevel"]:
-    #                         exec(jsonData["function required"])
-    #                         return [True, zippedUsers]
-    #                     else:
-    #                         return {"Errorcode":"1", "desc":"User submitted an access level that does not match assigned access level"}
-    #                 elif jsonData["for"]=="game" or jsonData["for"]=="drive":
-    #                     return exec(jsonData["function required"])
-    #                 else:
-    #                     return {"Errorcode":"-2", "desc":"User submitted unknown action"}
-    #             else:
-    #                 return {"Errorcode":"-3","desc":"ID Does not match"}
-    #         else:
-    #             return {"Errorcode":"-4", "desc":"user is not logged in"}
-    #     elif len(zippedUsers) > 1:
-    #         return {"Errorcode":"-5a", "desc":"duplicate users detected. Contact Customer Support"}
-    #     else:
-    #         return {"Errorcode":"-5b","desc":"user not detected. please make a user"}
-
-
+        if jsonData["for"]=="User" and specifiedUser[3] == "Root" and jsonData["for"][:4] =="user":
+            exec(jsonData["function required"])
+        else:
+            exec(jsonData["function required"])
+    else:
+        if 0 in errorOnValue:
+            retVal.append()
+        elif 1 in errorOnValue:
+            retVal.append()
+        elif 2 in errorOnValue:
+            retval.append()
+        elif 3 in errorOnValue:
+            retVal.append()
+        else:
+            retval.append()
 #{
 #       "Username":    "username",
 #       "Password":    "password",
