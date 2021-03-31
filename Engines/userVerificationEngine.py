@@ -323,13 +323,17 @@ def verify_user_request(jsonData=dict):
         for i in range(len(specifiedUser)):
             if specifiedUser[i] != recievedUser[i]:
                 errorOnValue.append(i)
+    else:
+        errorOnValue.append(-1)
     if len(errorOnValue) == 0:
         if jsonData["for"]=="User" and specifiedUser[3] == "Root" and jsonData["for"][:4] =="user":
             exec(jsonData["function required"])
         else:
             exec(jsonData["function required"])
     else:
-        if 0 in errorOnValue:
+        if -1 in errorOnValue:
+            retVal.append({"errorcode":"", "":""})
+        elif 0 in errorOnValue:
             retVal.append()
         elif 1 in errorOnValue:
             retVal.append()
