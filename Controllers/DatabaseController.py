@@ -42,10 +42,10 @@ def addrow(tableLayout=dict, rowData=list, databaseName=str):
 #closes the database
 #returns the user profile
 #NOTE: Needs all user criteria or a criteria that specifically identifies the user, such as a user name or email, since those values are unique
-def getRows(tableLayout=dict, rowData_dict=dict, databaseName=str):
+def getRows(tableLayout=dict, rowData_dict=dict, databaseName=str, selector=[]):
     fileExists = os.path.isfile(tableLayout["Database Directory"]+databaseName)
     if fileExists:
-        return databaseCommandEngine.retrieve_row(databaseName, tableLayout["Database Directory"], tableLayout["Database Tables"][0], rowData_dict)
+        return databaseCommandEngine.retrieve_row(databaseName, tableLayout["Database Directory"], tableLayout["Database Tables"][0], rowData_dict, selector)
     else:
         return -1
 

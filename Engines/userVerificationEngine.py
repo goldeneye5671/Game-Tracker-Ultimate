@@ -313,35 +313,42 @@ test=[
 #NOTE: In the future, IP Addresses may be required to verify that the user is only
 #       accessing their information from one location.
 def verify_user_request(jsonData=dict):
-    searchCriteria = {"Username":jsonData["Username"], "ID":jsonData["ID"], "AccessLevel":jsonData["AccessLevel"]}
-    specifiedUser = DatabaseController.getRows(userLoginInfoTBLayout,searchCriteria ,databaseNameForUsers)
-    zippedUsers = []
-    if type(specifiedUser) == list:
-        for item in specifiedUser:
-            zippedUsers.append(dict(zip(userLoginInfoTBLayout["Database Headers"], list(item))))
-    else:
-        return {"errorcode":"7", "desc":"userDatabase does not exist. Contact support"}
-    if len(zippedUsers) == 1:
-        if int(zippedUsers[0]["Login"]) == 1:
-            if zippedUsers[0]["ID"] == jsonData["ID"]:
-                if zippedUsers[0]["AccessLevel"] == "Root" and jsonData["for"] == "user":
-                    if zippedUsers[0]["AccessLevel"] == jsonData["AccessLevel"]:
-                        exec(jsonData["function required"])
-                        return [True, zippedUsers]
-                    else:
-                        return {"Errorcode":"1", "desc":"User submitted an access level that does not match assigned access level"}
-                elif jsonData["for"]=="game" or jsonData["for"]=="drive":
-                    return exec(jsonData["function required"])
-                else:
-                    return {"Errorcode":"-2", "desc":"User submitted unknown action"}
-            else:
-                return {"Errorcode":"-3","desc":"ID Does not match"}
-        else:
-            return {"Errorcode":"-4", "desc":"user is not logged in"}
-    elif len(zippedUsers) > 1:
-        return {"Errorcode":"-5a", "desc":"duplicate users detected. Contact Customer Support"}
-    else:
-        return {"Errorcode":"-5b","desc":"user not detected. please make a user"}
+    selectors = ["Username", "ID", "Login", "AccessLevel"]
+    specifiedUser = DatabaseController.getRows(userLoginInfoTBLayout,{"Username":jsonData["Username"]},databaseNameForUsers, selectors)
+    root = False
+    errorOnValue = []
+    retVal = []
+    if type(specifiedUser)==list and len(specifiedUser) == 1:
+        specifiedUser = list(specifiedUser[0])
+        recievedUser = list(jsonData.values())
+        for i in range(len(specifiedUser)):
+            if specifiedUser[i] != recievedUser[i]:
+                errorOnValue.append(i)
+    if len(errorOnValue) == 0:
+        root = specifiedUser[3]
+        
+
+        print(specifiedUser)
+    #         if int(specifiedUser[1]) == 1:
+    #             if specifiedUser[2] == jsonData["ID"]:
+    #                 if specifiedUser[1] == "Root" and jsonData["for"] == "user":
+    #                     if zippedUsers[0]["AccessLevel"] == jsonData["AccessLevel"]:
+    #                         exec(jsonData["function required"])
+    #                         return [True, zippedUsers]
+    #                     else:
+    #                         return {"Errorcode":"1", "desc":"User submitted an access level that does not match assigned access level"}
+    #                 elif jsonData["for"]=="game" or jsonData["for"]=="drive":
+    #                     return exec(jsonData["function required"])
+    #                 else:
+    #                     return {"Errorcode":"-2", "desc":"User submitted unknown action"}
+    #             else:
+    #                 return {"Errorcode":"-3","desc":"ID Does not match"}
+    #         else:
+    #             return {"Errorcode":"-4", "desc":"user is not logged in"}
+    #     elif len(zippedUsers) > 1:
+    #         return {"Errorcode":"-5a", "desc":"duplicate users detected. Contact Customer Support"}
+    #     else:
+    #         return {"Errorcode":"-5b","desc":"user not detected. please make a user"}
 
 
 #{
@@ -406,7 +413,7 @@ def verify_user_login(jsonData):
             #you could log in through anouther browser and reset the ID this way. I am not sure
             #if I want to keep it this way though. I only want one browser at a time to access
             #this data
-            DatabaseController.modifyRow(databaseNameForUsers, userLoginInfoTBLayout, {"ID":randint(0, 999999999), "Login":0}, {"spot":"Username", "Username":jsonData["Username"]})
+            DatabaseController.modifyRow(databaseNameForUsers, userLoginInfoTBLayout, {"ID":randint(0, 999999999), "Login":1}, {"spot":"Username", "Username":jsonData["Username"]})
         elif len(matchingUser) < 1: 
             return {"errorcode":"7a", "desc":"No user found with the given information. Try again"}
         else:
@@ -416,18 +423,32 @@ def verify_user_login(jsonData):
 
 #{
 #   Username:user_name,
-#   ID:randint(0, 9999999999)
+#   ID:randint(0, 9999999999),
+#   Login:1
 # }
 def verify_user_logout(jsonData):
-    searchCriteria = {"Username":jsonData["Username"], "ID":jsonData["ID"]}
+    searchCriteria = {"Username":jsonData["Username"], "ID":jsonData["ID"], "Login":jsonData["Login"]}
     matchingUser = DatabaseController.getRows(userLoginInfoTBLayout, searchCriteria, databaseNameForUsers)
     if type(matchingUser) == list:
         if len(matchingUser)==1:
             DatabaseController.modifyRow(databaseNameForUsers, userLoginInfoTBLayout, {"ID":0, "Login":0}, {"spot":"Username", "Username":jsonData["Username"]})
-    return None
+        elif len(matchingUser) > 1:
+            return {"errorcode":"8a","desc":"More than one user with the given data"}
+        else:
+            return {"errorcode":"8b", "desc":"No users found with the given data"}
+    else:
+        return {"errorcode":"8c", "desc":"Database does not exist. Contact customer support."}
 
-
-def verify_password_reset():
+#{
+#   Username:user_name
+#   Email: email
+# }
+def verify_password_reset(jsonData):
+    searchCriteria = {"Username":jsonData["Username"], "Email": jsonData["Email"]}
+    matchingUser = DatabaseController.getRows(userLoginInfoTBLayout, searchCriteria, databaseNameForUsers)
+    if type(matchingUser) == list:
+        if length(matchingUser) == 1:
+            return None
     return None
 
 

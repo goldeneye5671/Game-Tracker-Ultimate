@@ -26,8 +26,8 @@ from Engines import databaseCommandEngine
 #inserts a drive entry
 #saves the database
 #closes the database
-def create_drive_entry(name=str, tableLayout=dict, driveInfo_dict=dict):
-    matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict ,name)
+def create_drive_entry(name=str, tableLayout=dict, driveInfo_dict=dict, selector=["*"]):
+    matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict ,name, selector)
     if type(matchingDrives) == list:
         if len(matchingDrives) == 0:
             DatabaseController.addrow(tableLayout, list(driveInfo_dict.values()), name)

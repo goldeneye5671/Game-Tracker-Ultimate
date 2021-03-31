@@ -56,11 +56,21 @@ def delete_row(database_name=str, database_directory=str, tableName=str, selectC
     databaseConnections[1].close()
 
 
-def retrieve_row(database_name=str, database_directory=str, tableName=str, selectCriteria_dict=dict):
+def retrieve_row(database_name=str, database_directory=str, tableName=str, selectCriteria_dict=dict, selector=[]):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
-    selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table(tableName, "*", list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
+    selectCriteriaQuerry = None
+    if len(selector) > 0:
+        if "*" in selector and len(selector) == 1:
+            selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table(tableName, "*", list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
+        else:
+            selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table(tableName, ",".join(selector), list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
+    else:
+        databaseConnections[1].close()
+        return {"errorcode":"9a","desc":"selector not set"}
     databaseConnections[1].close()
     return selectCriteriaQuerry
+
+#print(retrieve_row("userLoginInfo.db", "Database Files/userLoginInfo/", "loginInfo", {"Username":"Fantasy89"}, ["Email", "Password"]))
 
 def retrieve_row_or(database_name=str, database_directory=str, tableName=str, selectCriteria_dict=dict):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
@@ -85,6 +95,5 @@ def update_table_at_spot(database_name=str, database_directory=str, table_name=s
     databaseConnections[1].execute(databaseStringEngine.update_table_at_spot(table_name, list(updateValues.keys()), spot), tuple(values))
     databaseConnections[0].commit()
     databaseConnections[1].close()
-
 
 #update_table_at_spot("userLoginInfo.db", "Database Files/userLoginInfo/", "loginInfo", {"ID":1, "Login":1}, {"spot":"Username", "Username":"Fantasy89"})
