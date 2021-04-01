@@ -70,13 +70,23 @@ def retrieve_row(database_name=str, database_directory=str, tableName=str, selec
     databaseConnections[1].close()
     return selectCriteriaQuerry
 
-#print(retrieve_row("userLoginInfo.db", "Database Files/userLoginInfo/", "loginInfo", {"Username":"Fantasy89"}, ["Email", "Password"]))
 
-def retrieve_row_or(database_name=str, database_directory=str, tableName=str, selectCriteria_dict=dict):
+def retrieve_row_or(database_name=str, database_directory=str, tableName=str, selectCriteria_dict=dict, selector=[]):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
-    selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table_or(tableName, "*", list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
+    selectCriteriaQuerry = None
+    if len(selector) > 0:    
+        if "*" in selector and len(selector) == 1:
+            selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table_or(tableName, "*", list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
+        else:
+            selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table_or(tableName, ",".join(selector), list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
+    else:
+        databaseConnections[1].close()
+        return {"errorcode":"9a","desc":"selector not set"}
     databaseConnections[1].close()
     return selectCriteriaQuerry
+
+#print(retrieve_row_or("userLoginInfo.db", "Database Files/userLoginInfo/", "loginInfo", {"Username":"Fantasy89", "Email":"test99999@test.com"}, ["Email", "Password"]))
+
 
 def retrieve_all_table_names(database_name=str, database_directory=str):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
@@ -90,7 +100,7 @@ def retrieve_all_table_names(database_name=str, database_directory=str):
 
 def update_table_at_spot(database_name=str, database_directory=str, table_name=str, updateValues=dict, spot=dict):
     values = list(updateValues.values())
-    values.append(spot["Username"])
+    values.append(spot["AtValue"])
     databaseConnections = createDatabaseConnections(database_name, database_directory)
     databaseConnections[1].execute(databaseStringEngine.update_table_at_spot(table_name, list(updateValues.keys()), spot), tuple(values))
     databaseConnections[0].commit()

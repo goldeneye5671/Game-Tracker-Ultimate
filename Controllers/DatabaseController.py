@@ -50,10 +50,10 @@ def getRows(tableLayout=dict, rowData_dict=dict, databaseName=str, selector=[]):
         return -1
 
 
-def getRowsOr(tableLayout=dict, rowData_dict=dict, databaseName=str):
+def getRowsOr(tableLayout=dict, rowData_dict=dict, databaseName=str, selector=[]):
     fileExists = os.path.isfile(tableLayout["Database Directory"]+databaseName)
     if fileExists:
-        return databaseCommandEngine.retrieve_row_or(databaseName, tableLayout["Database Directory"], tableLayout["Database Tables"][0], rowData_dict)
+        return databaseCommandEngine.retrieve_row_or(databaseName, tableLayout["Database Directory"], tableLayout["Database Tables"][0], rowData_dict, selector)
     else:
         return -1
 
@@ -77,7 +77,7 @@ def getTable(tableLayout=dict, databaseName=str):
 #saves new entry
 #closes the database
 def modifyRow(name=str, tableLayout=dict, modifications=dict, spot=dict):
-    fileExists = os.path.isfile(tableLayout["Database Directory"])
+    fileExists = os.path.isfile(tableLayout["Database Directory"]+name)
     if fileExists:
         return databaseCommandEngine.update_table_at_spot(name, tableLayout["Database Directory"], tableLayout["Database Tables"][0], modifications, spot)
     else:
