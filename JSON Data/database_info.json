@@ -19,7 +19,7 @@
     },
     "Games": {
         "Database Directory": "./Database Files/userGameInfo/",
-        "Database Tables":"null",
+        "Database Tables":null,
         "Database Headers": [
             "DriveName",
             "BreifDesc",

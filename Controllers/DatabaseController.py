@@ -19,7 +19,8 @@ def database_initialization(databaseName=str, tableLayout=dict):
         return -1
     else:
         databaseCommandEngine.create_database(databaseName, tableLayout["Database Directory"])
-        databaseCommandEngine.create_table(databaseName, tableLayout["Database Directory"], tableLayout["Database Tables"][0], tableLayout["Database Headers"])
+        if tableLayout["Database Tables"] != None:
+            databaseCommandEngine.create_table(databaseName, tableLayout["Database Directory"], tableLayout["Database Tables"][0], tableLayout["Database Headers"])
         return 0
 
 
