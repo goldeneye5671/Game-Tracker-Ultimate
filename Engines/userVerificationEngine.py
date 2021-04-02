@@ -50,7 +50,8 @@ q3             = "SecurityQ3"
 a1             = "AnswerQ1"
 a2             = "AnswerQ2"
 a3             = "AnswerQ3"
-
+conf           = "I confirm that I have read the above statement and understand that all my information will be permenently deleted."
+dr             = "Database Directory"
 #NOTE: Bug exists where is a username and user's database name may not match
 #       This causes the user to access the wrong drive. Assumed here that the
 #       browser will make sure that the username and the database name match.
@@ -223,6 +224,10 @@ def update_password(jsonData):
     if jsonData["Authority"][0] and jsonData["Authority"][1] == 3:
         DatabaseController.modifyRow(databaseNameForUsers, userLoginInfoTBLayout, {psw:jsonData[psw]}, {spt:usr, at:jsonData[usr]})
 
-
-def delete_account(jsonData):
+#   Confirmation: "I confirm that I have read the above statement and understand that all my information will be permenently deleted."
+def delete_account(confirmation, username):
+    if confirmation == conf:
+        DatabaseController.deleteDatabase(username+db, gameDatabaseTBLayout[dr])
+        DatabaseController.deleteDatabase(username+db, driveDatabaseTBLayout[dr])
+        DatabaseController.removeRow(userLoginInfoTBLayout, databaseNameForUsers, {usr: username})
     return None

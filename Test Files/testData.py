@@ -640,7 +640,10 @@ for item in users:
 for item in users:
     print(userVerificationEngine.verify_password_reset({usr:item[usr], eml:item[eml]}))
 
-print(userVerificationEngine.verify_password_reset({"Username":"OptimusPrime","Email":"test129@test.com"}))
-canIReset = userVerificationEngine.initiate_password_reset({"Username":"OptimusPrime","Email":"test129@test.com", a1:"maybe...",a2:"No",a3:""})
-userVerificationEngine.update_password({"Authority":canIReset, usr:"OptimusPrime", psw:"abc123456789"})
+for item in users:
+    print(userVerificationEngine.delete_account(userVerificationEngine.conf, item[usr]))
+
+# print(userVerificationEngine.verify_password_reset({"Username":"OptimusPrime","Email":"test129@test.com"}))
+# canIReset = userVerificationEngine.initiate_password_reset({"Username":"OptimusPrime","Email":"test129@test.com", a1:"maybe...",a2:"No",a3:""})
+# userVerificationEngine.update_password({"Authority":canIReset, usr:"OptimusPrime", psw:"abc123456789"})
 #print(userVerificationEngine.update_password())
