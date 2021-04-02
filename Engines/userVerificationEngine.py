@@ -47,6 +47,9 @@ at             = "AtValue"
 q1             = "SecurityQ1"
 q2             = "SecurityQ2"
 q3             = "SecurityQ3"
+a1             = "AnswerQ1"
+a2             = "AnswerQ2"
+a3             = "AnswerQ3"
 
 #NOTE: Bug exists where is a username and user's database name may not match
 #       This causes the user to access the wrong drive. Assumed here that the
@@ -185,25 +188,41 @@ def verify_user_logout(jsonData):
 # }
 def verify_password_reset(jsonData):
     searchCriteria = {usr:jsonData[usr], eml: jsonData[eml]}
-    matchingUser = DatabaseController.getRows(userLoginInfoTBLayout, searchCriteria, databaseNameForUsers, [q1, q2, q3])
+    matchingUser = DatabaseController.getRowsOr(userLoginInfoTBLayout, searchCriteria, databaseNameForUsers, [q1, q2, q3])
     if type(matchingUser) == list and len(matchingUser) == 1:
-        return list[matchingUser[0]]
+        return list(matchingUser[0])
+    return {err:"-10a", dsc:"No user found with that information"}
+
+#{
+#   Username:user_name
+#   Email: email
+#   question:answer
+#   question:answer
+#   question:answer
+# }
+def initiate_password_reset(jsonData):
+    searchCriteria = {usr:jsonData[usr], eml:jsonData[eml]}
+    matches = 0
+    matchingUser = DatabaseController.getRowsOr(userLoginInfoTBLayout, searchCriteria, databaseNameForUsers, [a1, a2, a3])
+    if type(matchingUser) == list and len(matchingUser) == 1:
+        matchingUser = list(matchingUser[0])
+        for item in matchingUser:
+            if item in list(jsonData.values()):
+                matches += 1
+        if matches == 3:
+            return [True, matches]
+        else:
+            return [False, matches]
+
+#{
+#   Authority:[Boolean: matches]
+#   Username:username,
+#   NewPassword:password
+# }
+def update_password(jsonData):
+    if jsonData["Authority"][0] and jsonData["Authority"][1] == 3:
+        DatabaseController.modifyRow(databaseNameForUsers, userLoginInfoTBLayout, {psw:jsonData[psw]}, {spt:usr, at:jsonData[usr]})
+
+
+def delete_account(jsonData):
     return None
-
-
-def initiate_password_reset():
-    return None
-
-#DatabaseController.addrow(jsonDataRetrieved, ["goldeneye5671", "Password", "choice@choice.com", 0, 1, "Root", "", "", "", "", "", ""], databaseNameForUsers)
-#print(verify_user_request(sentData1))
-# for item in test:
-#     print(verify_user_creation(item))
-
-# verify_user_login({usr:"Fantasy89", psw:psw})
-
-# for item in commands:
-#     print (verify_user_request(item))
-
-#eval(sentAct["function required"])
-
-#print(verify_user_request(jsonData, myType, []))
