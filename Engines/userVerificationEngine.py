@@ -159,7 +159,9 @@ def verify_user_login(jsonData):
             #you could log in through anouther browser and reset the ID this way. I am not sure
             #if I want to keep it this way though. I only want one browser at a time to access
             #this data
-            DatabaseController.modifyRow(databaseNameForUsers, userLoginInfoTBLayout, {rndID:randint(0, 999999999), "Login":1}, {spt:usr, at:jsonData[usr]})
+            randID = randint(0, 999999999)
+            DatabaseController.modifyRow(databaseNameForUsers, userLoginInfoTBLayout, {rndID:randID, "Login":1}, {spt:usr, at:jsonData[usr]})
+            return [True, randID]
     elif len(matchingUser) < 1: 
         return {err:"7a", dsc:"No user found with the given information. Try again"}
     else:
@@ -222,7 +224,7 @@ def initiate_password_reset(jsonData):
 # }
 def update_password(jsonData):
     if jsonData["Authority"][0] and jsonData["Authority"][1] == 3:
-        DatabaseController.modifyRow(databaseNameForUsers, userLoginInfoTBLayout, {psw:jsonData[psw]}, {spt:usr, at:jsonData[usr]})
+        DatabaseController.modifyRow(databaseNameForUsers, userLoginInfoTBLayout, {psw:jsonData["NewPassword"]}, {spt:usr, at:jsonData[usr]})
 
 #   Confirmation: "I confirm that I have read the above statement and understand that all my information will be permenently deleted."
 def delete_account(confirmation, username):
