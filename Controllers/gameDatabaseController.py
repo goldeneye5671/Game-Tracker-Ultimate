@@ -23,18 +23,51 @@ gameDatabaseTBLayout = JSONStringEngine.retrieve_all_database_entries("database_
 #   size_of_game: 485.67
 #   size_metric: gb
 # }
-def is_enough_space(usr, drv, sze, met):
+def is_enough_space(usr, drv, gameSize, gameMetric):
     driveSizeMetrics = []
     driveSize = DatabaseController.getRows(driveDatabaseTBLayout, {"DriveName":drv}, usr+".db", ["UseableSpaceOnDrive", "DriveSizeMetric"])
     if type(driveSize) == list and len(driveSize) == 1:
         driveSize = list(driveSize[0])
-        metrics = [met, driveSize[1]]
-        
-
-
-    return driveSize
-
-print(is_enough_space("Fantasy89", "d1", 497.6, "gb"))
+        match gameMetric:
+            case "mb":
+                driveSizeMetrics.append(1)
+            case "gb":
+                driveSizeMetrics.append(2)
+            case "tb":
+                driveSizeMetrics.append(3)
+            case _:
+                driveSizeMetric.append(-1)
+        match driveSize[1]:
+            case "mb":
+                driveSizeMetrics.append(1)
+            case "gb":
+                driveSizeMetrics.append(2)
+            case "tb":
+                driveSizeMetrics.append(3)
+            case _:
+                driveSizeMetric.append(-1)
+        #givenToMe              database
+    conversionVal = None
+    
+    if driveSizeMetrics[0] < driveSizeMetrics[1]:
+        conversionVal = gameSize
+        if driveSizeMetrics[1]-driveSizeMetrics[0] > 1:
+        #to convert, either devide by or multiply by 1,000
+            for i in range(driveSizeMetrics[1]-driveSizeMetrics[0]):
+                conversionVal/=1000
+            return float(driveSize[0])-conversionVal > 0
+        else:
+            conversionVal/=1000
+            return float(driveSize[0]) - conversionVal > 0
+    #if the game has a larger size metric that would mean that the game is bigger than the drive
+    elif driveSizeMetrics[0] > driveSizeMetrics[1]:
+        return False
+    else:
+        if gameSize > float(driveSize[0]):
+            return False
+        else:
+            return True        
+print(is_enough_space("Fantasy89", "d1", 900, "mb"))
 
 
 #opens game drive database
