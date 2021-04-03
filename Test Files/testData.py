@@ -637,20 +637,20 @@ listOfRandInts = []
 
 for item in users:
     print(userVerificationEngine.verify_user_creation(item))
-    print(userVerificationEngine.verify_password_reset({usr:item[usr], eml:item[eml]}))
-    item["Authority"] = userVerificationEngine.initiate_password_reset(item)
-    item["NewPassword"] = "ZYX987"
-    item[psw] = "ZYX987"
-    userVerificationEngine.update_password(item)
+    # print(userVerificationEngine.verify_password_reset({usr:item[usr], eml:item[eml]}))
+    # item["Authority"] = userVerificationEngine.initiate_password_reset(item)
+    # item["NewPassword"] = "ZYX987"
+    # item[psw] = "ZYX987"
+    # userVerificationEngine.update_password(item)
     values = userVerificationEngine.verify_user_login(item)
     if type(values) ==list:
         item[rndID] = values[1]
         item[login] = int(values[0])
-        print(userVerificationEngine.verify_user_logout(item)) 
-        print(userVerificationEngine.delete_account(userVerificationEngine.conf, item[usr]))
-    else:
-        print(values)
-print(users)
+    #     print(userVerificationEngine.verify_user_logout(item)) 
+    #     print(userVerificationEngine.delete_account(userVerificationEngine.conf, item[usr]))
+    # else:
+    #     print(values)
+# print(users)
 
 
 # print(userVerificationEngine.verify_password_reset({"Username":"OptimusPrime","Email":"test129@test.com"}))

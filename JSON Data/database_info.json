@@ -21,13 +21,12 @@
         "Database Directory": "./Database Files/userGameInfo/",
         "Database Tables":null,
         "Database Headers": [
-            "DriveName",
-            "BreifDesc",
-            "DriveSize",
-            "DriveSizeMetric",
-            "UseableSpaceOnDrive",
-            "RemainingSpaceOnDrive",
-            "NumberOfGamesOnDrive"
+            "GameName",
+            "Size",
+            "GameSizeMetric",
+            "GameTags",
+            "DateAdded",
+            "Playtime"
         ]
     },
     "Drives": {

@@ -72,6 +72,15 @@ dr             = "Database Directory"
 #   "for"              :"User, drive, game",
 #   "args"             :[arg1, arg2, arg3,...,argN]
 # }
+
+#{
+#   "Username": "Goldeneye5671"
+#   "ID": randint(0, 999999999)
+#   "AccessLevel": "Basic"
+#   "function required": "gameDatabaseController.addGame(*jsonData['args'])"
+#   "for":"game"
+#   "args": ["Goldeneye5671", "XBOXDrv1", 485.9, "gb"]
+# }
 def verify_user_request(jsonData=dict):
     selectors = [usr, rndID, login, acclvl]
     specifiedUser = DatabaseController.getRows(userLoginInfoTBLayout,{usr:jsonData[usr]},databaseNameForUsers, selectors)

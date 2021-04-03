@@ -9,16 +9,32 @@ import json
 import os
 import __init__
 from Engines import JSONStringEngine, databaseCommandEngine
+from Controllers import DatabaseController
+
+userLoginInfoTBLayout = JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "UserLoginInfo")
+driveDatabaseTBLayout = JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "Drives")
+gameDatabaseTBLayout = JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "Games")
 
 
-#creates a database for a user if it doesn't exist
-#NOTE: name of database is the username
-def database_initialization(tableLayout=dict, databaseName=str):
-    fileExists = os.path.isFile(tableLayout["Database Directory"]+databaseName)
-    if fileExists:
-        return -1
-    else:
-        databaseCommandEngine.create_database(tableLayout["Database Directory"]+name)
+#want to support mb, gb, tb
+#{
+#   name_of_user: user_name
+#   name_of_drive: drivename
+#   size_of_game: 485.67
+#   size_metric: gb
+# }
+def is_enough_space(usr, drv, sze, met):
+    driveSizeMetrics = []
+    driveSize = DatabaseController.getRows(driveDatabaseTBLayout, {"DriveName":drv}, usr+".db", ["UseableSpaceOnDrive", "DriveSizeMetric"])
+    if type(driveSize) == list and len(driveSize) == 1:
+        driveSize = list(driveSize[0])
+        metrics = [met, driveSize[1]]
+        
+
+
+    return driveSize
+
+print(is_enough_space("Fantasy89", "d1", 497.6, "gb"))
 
 
 #opens game drive database
@@ -27,19 +43,9 @@ def database_initialization(tableLayout=dict, databaseName=str):
 #inserts a game entry
 #saves the modification
 #closes the database
-def create_game_entry_on_drive(tableLayout=dict, rowData_dict=dict, overwriteFlag=str,databaseName=str):
-    fileExists = os.path.isfile(tableLayout["Database Directory"]+databaseName)
-    #gets all occurances of the given game on all drives
-    tableNames = databaseCommandEngine.retrieve_all_table_names()
-    occ = []
-    for table in tableNames:
-        list(occ.append(databaseCommandEngine.retrieve_row(databaseName, tableLayout["Database Directory"], table, rowData_dict)))
-    #checks if given game is on another drive and the overwrite flag is true
-        #make mods to the given drive (add game, subtract space, update drive table, return new data)
-    #tells user that game is installed on another drive and how to add to this drive
-    #if that is what they want to do
-    return occ
-
+def addGame(usr, drv, name, size, metric, tags, added, time):
+    if is_enough_space(usr, drv, size, metric):
+        return None
 
 
 

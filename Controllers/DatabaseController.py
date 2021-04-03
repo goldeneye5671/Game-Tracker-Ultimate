@@ -100,6 +100,12 @@ def removeRow(tableLayout=dict, databaseName=str, deleteCriteria_dict=dict):
     else:
         return -1
 
+def getTableNames(tableLayout, databaseName):
+    fileExists = os.path.isfile(tableLayout["Database Directory"])
+    if fileExists:
+        return databaseCommandEngine.retrieve_all_table_names(databaseName, tableLayout["Database Directory"])
+    else:
+        return -1
 
 def deleteDatabase(databaseName, database_directory):
     fileExists = os.path.isfile(database_directory+databaseName)
