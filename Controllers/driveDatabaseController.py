@@ -26,11 +26,12 @@ from Engines import databaseCommandEngine
 #inserts a drive entry
 #saves the database
 #closes the database
-def create_drive_entry(name=str, tableLayout=dict, driveInfo_dict=dict, selector=["*"]):
-    matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict ,name, selector)
+def create_drive_entry(name=str, gameTableLayout=dict,driveTableLayout=dict, driveInfo_dict=dict, selector=["*"]):
+    matchingDrives = DatabaseController.getRows(driveTableLayout, driveInfo_dict, name, selector)
     if type(matchingDrives) == list:
         if len(matchingDrives) == 0:
-            DatabaseController.addrow(tableLayout, list(driveInfo_dict.values()), name)
+            DatabaseController.addrow(driveTableLayout, list(driveInfo_dict.values()), name)
+            databaseCommandEngine.create_table(name, gameTableLayout["Database Directory"], driveInfo_dict["DriveName"], gameTableLayout["Database Headers"])
         else:
             return {"errorcode":"8a","desc":"Drive already exists"}
     else:
@@ -83,10 +84,11 @@ def modify_drive(name=str, tableLayout=dict, modifications=dict, spot=dict):
 #deletes the specified drive entry
 #saves the databse
 #closes the database
-def remove_drive(name=str, tableLayout=dict, deleteCriteria_dict=dict):
-    matchingDrives = retrieve_all_drives(name, tableLayout)
+def remove_drive(name=str, gameTableLayout=dict, driveTableLayout=dict, deleteCriteria_dict=dict):
+    matchingDrives = retrieve_all_drives(name, driveTableLayout)
     if type(matchingDrives) == list:
-        DatabaseController.removeRow(tableLayout, name, deleteCriteria_dict)
+        DatabaseController.removeRow(driveTableLayout, name, deleteCriteria_dict)
+        databaseCommandEngine.delete_table(name, gameTableLayout["Database Directory"], deleteCriteria_dict["DriveName"])
     else:
         return matchingDrives
 #uses the os lib to check if the database exists

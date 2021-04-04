@@ -646,7 +646,21 @@ for item in users:
     if type(values) ==list:
         item[rndID] = values[1]
         item[login] = int(values[0])
-    #     print(userVerificationEngine.verify_user_logout(item)) 
+        for item2 in driveInfo:
+            command = {
+            "Username":item["Username"],
+            "ID":item["ID"],
+            "Login":item["Login"],
+            "AccessLevel":item["AccessLevel"],
+            "function required":"driveDatabaseController.create_drive_entry(*jsonData['args'])",
+            "for":"drive",
+            "args":[item["Username"]+".db", gameDatabaseTBLayout, driveDatabaseTBLayout, item2]
+            }
+            userVerificationEngine.verify_user_request(command)
+            #command["function required"] = "driveDatabaseController.remove_drive(*jsonData['args'])"
+            #command["args"] = [item["Username"]+".db", gameDatabaseTBLayout, driveDatabaseTBLayout, item2]
+            #userVerificationEngine.verify_user_request(command)
+    print(userVerificationEngine.verify_user_logout(item)) 
     #     print(userVerificationEngine.delete_account(userVerificationEngine.conf, item[usr]))
     # else:
     #     print(values)

@@ -55,19 +55,21 @@ def is_enough_space(usr, drv, gameSize, gameMetric):
         #to convert, either devide by or multiply by 1,000
             for i in range(driveSizeMetrics[1]-driveSizeMetrics[0]):
                 conversionVal/=1000
-            return float(driveSize[0])-conversionVal > 0
+                conversionVal = float(driveSize[0])-conversionVal
+            return [conversionVal > 0, conversionVal]
         else:
             conversionVal/=1000
-            return float(driveSize[0]) - conversionVal > 0
+            conversionVal = float(driveSize[0]) - conversionVal
+            return [conversionVal > 0, conversionVal]
     #if the game has a larger size metric that would mean that the game is bigger than the drive
     elif driveSizeMetrics[0] > driveSizeMetrics[1]:
-        return False
+        return [False, -1]
     else:
         if gameSize > float(driveSize[0]):
-            return False
+            return [False, -1]
         else:
-            return True        
-print(is_enough_space("Fantasy89", "d1", 900, "mb"))
+            return [float(driveSize[0])-gameSize > 0, conversionVal]
+print(is_enough_space("Fantasy89", "d1", 900, "gb"))
 
 
 #opens game drive database
@@ -77,18 +79,19 @@ print(is_enough_space("Fantasy89", "d1", 900, "mb"))
 #saves the modification
 #closes the database
 def addGame(usr, drv, name, size, metric, tags, added, time):
-    if is_enough_space(usr, drv, size, metric):
-        return None
+    space = is_enough_space(usr, drv, size, metric)
+    if space[0]:
+        gamesOnDriveByName = databaseCommandEngine.retrieve_row(usr+".db", gameDatabaseTBLayout["Database Directory"], drv, {"GameName":name}, ["GameName"])
+        if type(gamesOnDriveByName) == list and len(gamesOnDriveByName) == 0:
+            gameToAdd = {"GameName":name, "Size": size, "GameSizeMetric":metric, "GameTags":tags, "DateAdded":added, "PlayTime":time}
+            databaseCommandEngine.insert_row(usr+".db",gameDatabaseTBLayout["Database Directory"], drv, gameDatabaseTBLayout["Database Headers"], list(gameToAdd.values()))
+            DatabaseController.modifyRow(usr+".db", driveDatabaseTBLayout, {"RemainingSpaceOnDrive":space[1]}, {"spot":"DriveName", "AtValue":drv})
+        else:
+            return {"errorcode":"11", "desc":"Game already exists on drive"}
+    else:
+        return {"errorcode":"10", "desc":"Not enough space remaining"}
 
-
-
-#opens game drive database
-#searches to see if table exists
-#creates a table with the name given
-#saves the modification
-#closes the database
-def create_drive_table():
-    return None
+addGame("Fantasy89", "d1", "Bioshock: Infinate", 192, "gb", "", "4-3-2021", 200)
 
 
 #opens the game drive database

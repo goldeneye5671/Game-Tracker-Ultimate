@@ -58,7 +58,7 @@ def delete_row(database_name=str, database_directory=str, tableName=str, selectC
 
 def retrieve_row(database_name=str, database_directory=str, tableName=str, selectCriteria_dict=dict, selector=[]):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
-    selectCriteriaQuerry = None
+    selectCriteriaQuerry = []
     if len(selector) > 0:
         if "*" in selector and len(selector) == 1:
             selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table(tableName, "*", list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
@@ -73,7 +73,7 @@ def retrieve_row(database_name=str, database_directory=str, tableName=str, selec
 
 def retrieve_row_or(database_name=str, database_directory=str, tableName=str, selectCriteria_dict=dict, selector=[]):
     databaseConnections = createDatabaseConnections(database_name, database_directory)
-    selectCriteriaQuerry = None
+    selectCriteriaQuerry = []
     if len(selector) > 0:    
         if "*" in selector and len(selector) == 1:
             selectCriteriaQuerry = databaseConnections[1].execute(databaseStringEngine.select_table_or(tableName, "*", list(selectCriteria_dict.keys())), tuple(selectCriteria_dict.values())).fetchall()
