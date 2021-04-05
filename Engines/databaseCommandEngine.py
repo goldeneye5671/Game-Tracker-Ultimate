@@ -106,4 +106,4 @@ def update_table_at_spot(database_name=str, database_directory=str, table_name=s
     databaseConnections[0].commit()
     databaseConnections[1].close()
 
-#update_table_at_spot("userLoginInfo.db", "Database Files/userLoginInfo/", "loginInfo", {"ID":1, "Login":1}, {"spot":"Username", "Username":"Fantasy89"})
+#update_table_at_spot("userLoginInfo.db", "Database Files/userLoginInfo/", "loginInfo", {"ID":1, "Login":1}, {"spot":"Username", "AtValue":"Fantasy89"})

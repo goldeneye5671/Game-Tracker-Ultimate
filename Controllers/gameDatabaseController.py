@@ -9,7 +9,7 @@ import json
 import os
 import __init__
 from Engines import JSONStringEngine, databaseCommandEngine
-from Controllers import DatabaseController
+from Controllers import DatabaseController, driveDatabaseController
 
 userLoginInfoTBLayout = JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "UserLoginInfo")
 driveDatabaseTBLayout = JSONStringEngine.retrieve_all_database_entries("database_info.json", "./JSON Data/", "Drives")
@@ -25,7 +25,7 @@ gameDatabaseTBLayout = JSONStringEngine.retrieve_all_database_entries("database_
 # }
 def is_enough_space(usr, drv, gameSize, gameMetric):
     driveSizeMetrics = []
-    driveSize = DatabaseController.getRows(driveDatabaseTBLayout, {"DriveName":drv}, usr+".db", ["UseableSpaceOnDrive", "DriveSizeMetric"])
+    driveSize = DatabaseController.getRows(driveDatabaseTBLayout, {"DriveName":drv}, usr+".db", ["RemainingSpaceOnDrive", "DriveSizeMetric"])
     if type(driveSize) == list and len(driveSize) == 1:
         driveSize = list(driveSize[0])
         match gameMetric:
@@ -69,7 +69,7 @@ def is_enough_space(usr, drv, gameSize, gameMetric):
             return [False, -1]
         else:
             return [float(driveSize[0])-gameSize > 0, conversionVal]
-print(is_enough_space("Fantasy89", "d1", 900, "gb"))
+#print(is_enough_space("Fantasy89", "d1", 900, "gb"))
 
 
 #opens game drive database
@@ -85,7 +85,8 @@ def addGame(usr, drv, name, size, metric, tags, added, time):
         if type(gamesOnDriveByName) == list and len(gamesOnDriveByName) == 0:
             gameToAdd = {"GameName":name, "Size": size, "GameSizeMetric":metric, "GameTags":tags, "DateAdded":added, "PlayTime":time}
             databaseCommandEngine.insert_row(usr+".db",gameDatabaseTBLayout["Database Directory"], drv, gameDatabaseTBLayout["Database Headers"], list(gameToAdd.values()))
-            DatabaseController.modifyRow(usr+".db", driveDatabaseTBLayout, {"RemainingSpaceOnDrive":space[1]}, {"spot":"DriveName", "AtValue":drv})
+            # DatabaseController.modifyRow(usr+".db", driveDatabaseTBLayout, {"RemainingSpaceOnDrive":space[1]},)
+            driveDatabaseController.modify_drive(usr+".db", driveDatabaseTBLayout, {"RemainingSpaceOnDrive":space[1]}, {"spot":"DriveName", "AtValue":drv}, ["*"])
         else:
             return {"errorcode":"11", "desc":"Game already exists on drive"}
     else:
@@ -100,8 +101,8 @@ addGame("Fantasy89", "d1", "Bioshock: Infinate", 192, "gb", "", "4-3-2021", 200)
 #saves the retrieved data to a variable
 #closes the database
 #returns the variable in the desired format
-def retrieve_game_on_drive():
-    return None
+def retrieve_game_on_drive(usr, drv, name):
+    return databaseCommandEngine.retrieve_row(usr+".db", gameDatabaseTBLayout["Database Directory"], drv, {"GameName":name}, ["*"])
 
 
 #opens the game drive database
@@ -110,8 +111,8 @@ def retrieve_game_on_drive():
 #saves the retrieved data to a variable
 #closes the database
 #returns the variable in the desired format
-def retrieve_all_games_on_drive():
-    return None
+def retrieve_all_games_on_drive(usr, drv):
+    return databaseCommandEngine.retrieve_table(usr+".db", gameDatabaseTBLayout["Database Directory"], drv)
 
 
 #opens the game drive database
@@ -123,10 +124,53 @@ def retrieve_all_games_on_drive():
 #inserts the modified entry to the table with the correct drive name
 #saves the modification
 #closes the database
-def modify_game_on_drive():
-    return None
 
+#Expected layout for adding more data to a game or subtracting data
+#{
+#   Size:20,
+#   GameSizeMetric:gb
+# }
+#Expected layout for everythine else shouldn't matter as much
+#{
+#   GameName: newGameName,
+#   GameTags: newGameTags,
+#   DateAdded: 18-04-2021
+#   Playtime: newplaytime
+# }
+#Can't change the size metric because that would require conversion
+#To change the size metric, the user will have to delete the game and
+#add the game again using the size metric they want
+def modify_game_on_drive(usr, drv, name, updatedValues_Dict, spot, action):
+    matchingGames = retrieve_game_on_drive(usr, drv, name)
+    if type(matchingGames) == list and len(matchingGames) == 1:
+        matchingGames = list(matchingGames[0])
+        match action:
+            case "+":
+                space = is_enough_space(usr, drv, updatedValues_Dict["Size"], updatedValues_Dict["GameSizeMetric"])
+                if space[0] and matchingGames[2] == updatedValues_Dict["GameSizeMetric"]:
+                    updatedValues_Dict["Size"] = matchingGames[1] + updatedValues_Dict["Size"]
+                    databaseCommandEngine.update_table_at_spot(usr+".db", gameDatabaseTBLayout["Database Directory"], drv, updatedValues_Dict, {"spot":"GameName", "AtValue": name})
+                    databaseCommandEngine.update_table_at_spot(usr+".db", driveDatabaseTBLayout["Database Directory"],driveDatabaseTBLayout["Database Tables"][0], {"RemainingSpaceOnDrive":space[1]}, {"spot":"DriveName", "AtValue":drv})
+                    # driveDatabaseController.modify_drive()
+                    return space[1]
+            case "-":
+                if updatedValues_Dict["GameSizeMetric"] ==matchingGames[2]:
+                    updatedValues_Dict["Size"] = matchingGames[1] + updatedValues_Dict["Size"]
+                    databaseCommandEngine.update_table_at_spot(usr+".db", gameDatabaseTBLayout["Database Directory"], drv, updatedValues_Dict, {"spot": "GameName", "AtValue":name})
+                    driveSizeMetric = driveDatabaseController.retrieve_drives(usr+".db", driveDatabaseTBLayout, {"DriveName": drv}, ["DriveSizeMetric"])[0]
+                    if driveSizeMetric[0] == matchingGames[2]:
 
+                    elif driveSizeMetric == "tb" and matchingGames[2] == "gb":
+
+                    else:
+                        
+                return None
+            case _:
+                return None
+    else:
+        return {"errorcode":"12", "desc":"Game does not exist"}
+
+modify_game_on_drive("Fantasy89", "d1", "Bioshock: Infinate", {"Size":20, "GameSizeMetric":"gb"}, {"spot":"GameName", "AtValue":"Bioshock: Infinate"}, "-")
 
 #NOTE: Will need drive name so that it deletes the game from the right drive
 #NOTE: Will need game name so that it deletes the game with the correct name
@@ -136,6 +180,7 @@ def modify_game_on_drive():
 #saves the modification
 #closes the database
 def remove_game_on_drive():
+    
     return None
 
 

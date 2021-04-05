@@ -42,8 +42,8 @@ def create_drive_entry(name=str, gameTableLayout=dict,driveTableLayout=dict, dri
 #checks to see if the drive exists otherwise returns an error
 #returns the drive entry
 #closes the database
-def retrieve_drives(name=str, tableLayout=dict, driveInfo_dict=dict):
-    matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict, name)
+def retrieve_drives(name=str, tableLayout=dict, driveInfo_dict=dict, selector=[]):
+    matchingDrives = DatabaseController.getRows(tableLayout, driveInfo_dict, name, selector)
     if len(matchingDrives) == 0:
         return {"errorcode":"9","desc":"Search querry resulted in no matches for the given drive. Drive doesn't exist."}
     else:    
@@ -72,9 +72,9 @@ def retrieve_all_drives(name=str, tableLayout=dict):
 #spot{
 #   property:valueOfProperty
 # }
-def modify_drive(name=str, tableLayout=dict, modifications=dict, spot=dict):
-    matchingDrives = retrieve_all_drives(name, tableLayout)
-    if type(matchingDrives) == list:
+def modify_drive(name=str, tableLayout=dict, modifications=dict, spot=dict, selector=[]):
+    matchingDrives = retrieve_drives(name, tableLayout, {"DriveName":spot["AtValue"]}, selector)
+    if type(matchingDrives) == list and len(matchingDrives) == 1:
         DatabaseController.modifyRow(name, tableLayout, modifications, spot)
     else:
         return matchingDrives
@@ -86,7 +86,7 @@ def modify_drive(name=str, tableLayout=dict, modifications=dict, spot=dict):
 #closes the database
 def remove_drive(name=str, gameTableLayout=dict, driveTableLayout=dict, deleteCriteria_dict=dict):
     matchingDrives = retrieve_all_drives(name, driveTableLayout)
-    if type(matchingDrives) == list:
+    if type(matchingDrives) == list and len(matchingDrives) == 1:
         DatabaseController.removeRow(driveTableLayout, name, deleteCriteria_dict)
         databaseCommandEngine.delete_table(name, gameTableLayout["Database Directory"], deleteCriteria_dict["DriveName"])
     else:
